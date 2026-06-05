@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasun Moolikagedara | Cybersecurity Researcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #0f2040;
+    --navy-light: #1a3a6b;
+    --accent: #00c4a1;
+    --accent2: #4f8ef7;
+    --accent3: #f7c948;
+    --bg: #050d1a;
+    --surface: #0d1f35;
+    --surface2: #0f2848;
+    --text: #e8edf5;
+    --text-muted: #7a94b8;
+    --text-dim: #4a6080;
+    --border: rgba(255,255,255,0.07);
+    --glow: rgba(0,196,161,0.15);
+    --radius: 12px;
+    --ff-serif: 'DM Serif Display', Georgia, serif;
+    --ff-sans: 'DM Sans', system-ui, sans-serif;
+    --ff-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--ff-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── GRID LINES BACKGROUND ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(5,13,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--ff-mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 2.5rem 4rem;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .hero-orb-1 { width: 600px; height: 600px; top: -100px; right: -150px; background: radial-gradient(circle, rgba(0,196,161,0.12) 0%, transparent 70%); }
+  .hero-orb-2 { width: 400px; height: 400px; bottom: 0; left: -100px; background: radial-gradient(circle, rgba(79,142,247,0.1) 0%, transparent 70%); }
+
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  .hero-tag {
+    font-family: var(--ff-mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-tag::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--accent); }
+
+  h1 {
+    font-family: var(--ff-serif);
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-title-line2 {
+    font-family: var(--ff-serif);
+    font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 2.5rem;
+  }
+
+  .tag {
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid;
+    letter-spacing: 0.05em;
+  }
+  .tag-green { border-color: rgba(0,196,161,0.4); color: var(--accent); background: rgba(0,196,161,0.06); }
+  .tag-blue { border-color: rgba(79,142,247,0.4); color: var(--accent2); background: rgba(79,142,247,0.06); }
+  .tag-gold { border-color: rgba(247,201,72,0.4); color: var(--accent3); background: rgba(247,201,72,0.06); }
+
+  .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1.75rem;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary { background: var(--accent); color: var(--navy); }
+  .btn-primary:hover { background: #00e0b8; transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── PHOTO CARD ── */
+  .hero-photo-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .photo-frame {
+    position: relative;
+    width: 340px;
+    height: 420px;
+  }
+
+  .photo-frame::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), transparent);
+    border-radius: 20px;
+    z-index: 0;
+  }
+
+  .photo-frame img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 18px;
+    display: block;
+  }
+
+  .photo-badge {
+    position: absolute;
+    bottom: -16px;
+    left: -20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    color: var(--accent);
+    z-index: 2;
+    white-space: nowrap;
+  }
+  .photo-badge strong { display: block; font-size: 18px; color: #fff; font-family: var(--ff-sans); margin-bottom: 2px; }
+
+  .photo-badge2 {
+    position: absolute;
+    top: -16px;
+    right: -20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--text-muted);
+    z-index: 2;
+    font-family: var(--ff-mono);
+    white-space: nowrap;
+  }
+  .photo-badge2 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 6px; animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+  /* ── SECTION BASE ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 2.5rem;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    font-family: var(--ff-serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #fff;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+  }
+
+  .section-divider {
+    width: 48px;
+    height: 2px;
+    background: var(--accent);
+    margin-bottom: 3rem;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .about-text p { color: var(--text-muted); margin-bottom: 1rem; font-size: 16px; line-height: 1.8; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .stat-num { font-family: var(--ff-serif); font-size: 2.5rem; color: var(--accent); display: block; }
+  .stat-label { font-size: 12px; color: var(--text-muted); font-family: var(--ff-mono); letter-spacing: 0.05em; }
+
+  .skill-clusters { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .skill-cluster h4 {
+    font-size: 11px;
+    font-family: var(--ff-mono);
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .skill-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    transition: all 0.2s;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── EXPERIENCE ── */
+  #experience { background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 50%, var(--bg) 100%); }
+
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, var(--accent), var(--accent2), transparent); }
+
+  .tl-item {
+    position: relative;
+    padding-left: 2rem;
+    padding-bottom: 3rem;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 3px rgba(0,196,161,0.2);
+    transform: translateX(-4.5px);
+  }
+
+  .tl-date {
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+
+  .tl-org {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: var(--ff-mono);
+    margin-bottom: 0.25rem;
+  }
+
+  .tl-role {
+    font-family: var(--ff-serif);
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+
+  .tl-desc { color: var(--text-muted); font-size: 15px; line-height: 1.75; }
+
+  .tl-bullets { list-style: none; margin-top: 0.75rem; display: flex; flex-direction: column; gap: 6px; }
+  .tl-bullets li { color: var(--text-muted); font-size: 14px; padding-left: 1.25rem; position: relative; }
+  .tl-bullets li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 12px; }
+
+  /* ── PUBLICATIONS ── */
+  .pub-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .pub-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pub-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+  .pub-card:hover { border-color: rgba(0,196,161,0.3); transform: translateX(4px); }
+
+  .pub-num {
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .pub-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 0.5rem; line-height: 1.5; }
+  .pub-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 0.75rem; }
+
+  .pub-link {
+    font-family: var(--ff-mono);
+    font-size: 11px;
+    color: var(--accent2);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(79,142,247,0.3);
+    padding: 3px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+  .pub-link:hover { background: rgba(79,142,247,0.1); }
+
+  /* ── CRYPTO TEACHING ── */
+  #crypto { background: var(--surface); }
+
+  .crypto-intro { color: var(--text-muted); max-width: 700px; margin-bottom: 3rem; font-size: 16px; line-height: 1.8; }
+
+  .crypto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .crypto-card {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .crypto-card:hover { transform: translateY(-4px); border-color: rgba(0,196,161,0.3); }
+
+  .crypto-card .icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .crypto-card h3 { font-size: 1rem; font-weight: 500; color: #fff; margin-bottom: 0.5rem; }
+  .crypto-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
+
+  .crypto-topics { display: flex; flex-wrap: wrap; gap: 6px; }
+  .crypto-topic {
+    font-family: var(--ff-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    background: rgba(0,196,161,0.08);
+    border: 1px solid rgba(0,196,161,0.2);
+    color: var(--accent);
+    border-radius: 3px;
+  }
+
+  .crypto-cta {
+    margin-top: 3rem;
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  .crypto-cta p { color: var(--text-muted); font-size: 15px; max-width: 600px; }
+
+  /* ── CERTS ── */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .cert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .cert-card:hover { border-color: var(--accent2); }
+  .cert-card .cert-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+  .cert-card h4 { font-size: 14px; color: var(--text); line-height: 1.4; }
+  .cert-card span { font-size: 12px; color: var(--accent); font-family: var(--ff-mono); }
+
+  /* ── EDUCATION ── */
+  .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .edu-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    transition: border-color 0.2s;
+  }
+  .edu-card:hover { border-color: rgba(0,196,161,0.3); }
+  .edu-degree { font-size: 13px; font-weight: 500; color: var(--accent); font-family: var(--ff-mono); margin-bottom: 0.5rem; }
+  .edu-field { font-size: 1.05rem; color: #fff; margin-bottom: 0.25rem; }
+  .edu-school { font-size: 14px; color: var(--text-muted); margin-bottom: 0.25rem; }
+  .edu-year { font-size: 12px; color: var(--text-dim); font-family: var(--ff-mono); }
+
+  /* ── CONTACT ── */
+  #contact { background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%); }
+
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .contact-info h2 { margin-bottom: 1rem; }
+  .contact-info p { color: var(--text-muted); margin-bottom: 2rem; font-size: 16px; }
+
+  .contact-items { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .contact-item:hover { border-color: var(--accent); }
+  .contact-item .ci-icon { width: 36px; height: 36px; background: rgba(0,196,161,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .contact-item .ci-text { display: flex; flex-direction: column; }
+  .contact-item .ci-label { font-size: 11px; color: var(--text-dim); font-family: var(--ff-mono); letter-spacing: 0.05em; }
+  .contact-item .ci-val { font-size: 14px; color: var(--text); }
+
+  .open-to {
+    background: var(--navy);
+    border: 1px solid rgba(0,196,161,0.2);
+    border-radius: var(--radius);
+    padding: 2rem;
+  }
+  .open-to h3 { font-family: var(--ff-serif); font-size: 1.5rem; color: #fff; margin-bottom: 1rem; }
+  .role-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .role-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .role-list li::before { content: '✓'; color: var(--accent); font-weight: 600; flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-dim);
+    font-family: var(--ff-mono);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.25rem; }
+    .hero { padding: 7rem 1.5rem 4rem; }
+    .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-photo-wrap { order: -1; }
+    .photo-frame { width: 260px; height: 320px; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .stats-row { grid-template-columns: repeat(3,1fr); }
+    .crypto-cta { flex-direction: column; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    h1 { font-size: 2.4rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">KM // Portfolio</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="#gallery">Research</a></li>
+    <li><a href="#crypto">Teaching</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-inner">
+    <div class="hero-content fade-in">
+      <p class="hero-tag">PhD · Cybersecurity · AI · Blockchain</p>
+      <h1>Kasun <em>Moolikagedara</em></h1>
+      <p class="hero-title-line2">Cybersecurity Researcher &amp; IT Professional</p>
+      <p class="hero-desc">Auckland-based researcher with 8+ years spanning cybersecurity, AI-driven systems, and blockchain-based data integrity. PhD from AUT · MSc from Kingston University, UK.</p>
+      <div class="hero-tags">
+        <span class="tag tag-green">Blockchain Security</span>
+        <span class="tag tag-blue">Deep Learning · YOLO · CNN</span>
+        <span class="tag tag-gold">Deepfake Detection</span>
+        <span class="tag tag-green">Python · OpenCV</span>
+        <span class="tag tag-blue">IT Infrastructure</span>
+        <span class="tag tag-gold">Academic Publishing</span>
+      </div>
+      <div class="btn-row">
+        <a href="#publications" class="btn btn-primary">View Publications</a>
+        <a href="https://www.linkedin.com/in/kasun-mg" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
+        <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&hl=en" target="_blank" class="btn btn-outline">Google Scholar ↗</a>
+      </div>
+    </div>
+    <div class="hero-photo-wrap fade-in" style="transition-delay:0.2s">
+      <div class="photo-frame">
+        <div class="photo-badge2"><span class="dot"></span>Open to Opportunities · Auckland, NZ</div>
+        <img src="aa.jpg" alt="Kasun Moolikagedara">
+        <div class="photo-badge">
+          <strong>7</strong>
+          peer-reviewed publications
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <p class="section-label fade-in">01 // About</p>
+    <h2 class="fade-in">Research at the edge of<br><em style="font-style:italic;color:var(--accent)">security & intelligence</em></h2>
+    <div class="section-divider"></div>
+    <div class="about-grid">
+      <div class="about-text fade-in">
+        <p>I'm an Auckland-based IT professional and cybersecurity researcher with 8+ years of experience spanning technical support, information security research, and AI-driven systems development.</p>
+        <p>My background sits at an unusual intersection: deep hands-on IT support experience combined with postgraduate research in security, AI, and data integrity. My PhD at AUT developed <strong style="color:var(--text)">video blockchain frameworks</strong> for intelligent surveillance — using YOLO and CNN deep learning models to detect manipulated or AI-generated content and protect data integrity.</p>
+        <p>I hold a PhD in Computer Science from Auckland University of Technology and an MSc in Network &amp; Information Security from Kingston University, UK. I've published 7 peer-reviewed papers on AI-powered video authentication, blockchain-based data protection, and computer vision systems for security applications.</p>
+        <div class="stats-row">
+          <div class="stat-card">
+            <span class="stat-num">8+</span>
+            <span class="stat-label">Years Experience</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">7</span>
+            <span class="stat-label">Publications</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">1K+</span>
+            <span class="stat-label">Support Tickets</span>
+          </div>
+        </div>
+      </div>
+      <div class="skill-clusters fade-in" style="transition-delay:0.15s">
+        <div class="skill-cluster">
+          <h4>🔐 Security &amp; Research</h4>
+          <div class="skill-pills">
+            <span class="pill">Blockchain Security</span>
+            <span class="pill">Cryptography</span>
+            <span class="pill">Deepfake Detection</span>
+            <span class="pill">Digital Forensics</span>
+            <span class="pill">Network Security</span>
+            <span class="pill">IoT Privacy</span>
+          </div>
+        </div>
+        <div class="skill-cluster">
+          <h4>🤖 AI &amp; Computer Vision</h4>
+          <div class="skill-pills">
+            <span class="pill">YOLO</span>
+            <span class="pill">CNN</span>
+            <span class="pill">OpenCV</span>
+            <span class="pill">Python</span>
+            <span class="pill">Deep Learning</span>
+            <span class="pill">Object Detection</span>
+          </div>
+        </div>
+        <div class="skill-cluster">
+          <h4>🖥️ IT Infrastructure</h4>
+          <div class="skill-pills">
+            <span class="pill">Windows Server</span>
+            <span class="pill">Active Directory</span>
+            <span class="pill">ServiceNow</span>
+            <span class="pill">Endpoint Security</span>
+            <span class="pill">L1/L2 Support</span>
+          </div>
+        </div>
+        <div class="skill-cluster">
+          <h4>📚 Academic</h4>
+          <div class="skill-pills">
+            <span class="pill">Peer Review</span>
+            <span class="pill">Curriculum Design</span>
+            <span class="pill">Research Supervision</span>
+            <span class="pill">Technical Writing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <p class="section-label fade-in">02 // Experience</p>
+    <h2 class="fade-in">Professional Journey</h2>
+    <div class="section-divider"></div>
+    <div class="timeline">
+
+      <div class="tl-item fade-in">
+        <p class="tl-date">February 2025 – Present</p>
+        <p class="tl-org">Verifone · Auckland, New Zealand</p>
+        <h3 class="tl-role">IT Support &amp; Security Role</h3>
+        <p class="tl-desc">Providing Level 1 and Level 2 technical support and software-related work for secure payment terminals. Managing incidents via ServiceNow and maintaining zero major security incidents across 500+ devices monthly.</p>
+      </div>
+
+      <div class="tl-item fade-in">
+        <p class="tl-date">August 2020 – December 2024</p>
+        <p class="tl-org">Auckland University of Technology · Auckland, New Zealand</p>
+        <h3 class="tl-role">PhD Researcher — AI Security, Blockchain &amp; Computer Vision</h3>
+        <ul class="tl-bullets">
+          <li>Developed video blockchain frameworks to protect integrity and privacy of surveillance footage in smart city environments</li>
+          <li>Designed AI-driven authentication models to detect manipulated or AI-generated video — applicable to deepfake detection and digital forensics</li>
+          <li>Applied YOLO and CNN deep learning models for object recognition and anomaly detection in security footage</li>
+          <li>Built Python and OpenCV pipelines for large-scale video data processing, validation and analysis</li>
+          <li>Published 5 peer-reviewed journal articles on blockchain security, AI video authentication, and smart city surveillance</li>
+          <li>Presented research findings to academic panels, industry partners, and international conference audiences</li>
+        </ul>
+      </div>
+
+      <div class="tl-item fade-in">
+        <p class="tl-date">August 2022 – February 2023</p>
+        <p class="tl-org">Auckland University of Technology · Auckland, New Zealand</p>
+        <h3 class="tl-role">Research Assistant — Computer Vision &amp; AI Health &amp; Safety Systems</h3>
+        <ul class="tl-bullets">
+          <li>Applied Computer Vision and ML models to assess human pose and detect musculoskeletal injury risk in real-time</li>
+          <li>Developed and debugged systems using Python, JavaScript, and OpenCV</li>
+          <li>Authored technical reports and presented findings to stakeholders, supporting adoption of smart safety monitoring systems</li>
+        </ul>
+      </div>
+
+      <div class="tl-item fade-in">
+        <p class="tl-date">February 2019 – July 2022</p>
+        <p class="tl-org">Saegis Campus · Sri Lanka (Remote from NZ)</p>
+        <h3 class="tl-role">Programme Leader — IT Certificate &amp; Diploma Programmes</h3>
+        <ul class="tl-bullets">
+          <li>End-to-end programme leadership: strategy development, curriculum design, assessment frameworks, quality assurance, and compliance with full autonomous decision-making</li>
+          <li>Led development and launch of new IT programmes — from market identification through scoping, content design, and accredited delivery</li>
+          <li>Built, led, and mentored a teaching team — setting delivery standards and developing staff capability</li>
+          <li>Designed forward-thinking IT department strategy aligned to industry trends and learner career pathways</li>
+          <li>Mentored students on study pathway selection, supporting academic progression and pastoral wellbeing</li>
+          <li>Delivered all responsibilities remotely from New Zealand, demonstrating self-direction and effective distributed team management</li>
+        </ul>
+      </div>
+
+      <div class="tl-item fade-in">
+        <p class="tl-date">May 2016 – September 2020</p>
+        <p class="tl-org">Analytical Instruments (Pvt) Ltd · Colombo, Sri Lanka</p>
+        <h3 class="tl-role">IT Support Specialist — Infrastructure &amp; Security</h3>
+        <ul class="tl-bullets">
+          <li>Administered Windows Server, Active Directory, and user account management across the organisation</li>
+          <li>Monitored and managed Kaspersky Endpoint Security — applying patches, updates and security configurations</li>
+          <li>Resolved 1,000+ L1/L2 support tickets with a 95% user satisfaction rating</li>
+          <li>Maintained 99.9% network uptime across infrastructure critical to health supply operations</li>
+          <li>Maintained IT documentation, audit records, and compliance logs to support organisational security posture</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="container">
+    <p class="section-label fade-in">03 // Research Output</p>
+    <h2 class="fade-in">Publications</h2>
+    <div class="section-divider"></div>
+    <div class="pub-grid">
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">01 · 2025 · Journal Article</p>
+        <p class="pub-title">Blockchain-powered authentication: Reinforcing identification for misinformation in AI-generated videos</p>
+        <p class="pub-meta">Moolikagedara, K. — Rangahau Aranga: AUT Graduate Review, 4(1)</p>
+        <a href="https://doi.org/10.24135/rangahau-aranga.v4i1.261" target="_blank" class="pub-link">doi.org/10.24135/rangahau-aranga.v4i1.261 ↗</a>
+      </div>
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">02 · 2024 · Doctoral Dissertation</p>
+        <p class="pub-title">Computational methods for video blockchain in intelligent surveillance</p>
+        <p class="pub-meta">Moolikagedara, K. — Auckland University of Technology (PhD Thesis)</p>
+        <a href="http://hdl.handle.net/10292/18151" target="_blank" class="pub-link">hdl.handle.net/10292/18151 ↗</a>
+      </div>
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">03 · 2024 · Journal Article</p>
+        <p class="pub-title">Advancing video data privacy preservation in IoT networks through video blockchain</p>
+        <p class="pub-meta">Moolikagedara, K., Nguyen, M., Yan, W.Q., &amp; Li, X.J. — Information, 15(3), 171</p>
+        <a href="https://doi.org/10.3390/info15030171" target="_blank" class="pub-link">doi.org/10.3390/info15030171 ↗</a>
+      </div>
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">04 · 2023 · Journal Article</p>
+        <p class="pub-title">Video blockchain: A decentralised approach for secure and sustainable networks with distributed video footage from vehicle-mounted cameras in smart cities</p>
+        <p class="pub-meta">Moolikagedara, K., Nguyen, M., Yan, W.Q., &amp; Li, X.J. — Electronics, 12(17), 3621</p>
+        <a href="https://doi.org/10.3390/electronics12173621" target="_blank" class="pub-link">doi.org/10.3390/electronics12173621 ↗</a>
+      </div>
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">05 · 2023 · Journal Article</p>
+        <p class="pub-title">Smart vision-based analysis and error deduction of human pose to reduce musculoskeletal disorders in construction</p>
+        <p class="pub-meta">Purushothaman, M.B., &amp; Moolikagedara, K. — Smart and Sustainable Built Environment</p>
+        <a href="https://doi.org/10.1108/SASBE-02-2023-0037" target="_blank" class="pub-link">doi.org/10.1108/SASBE-02-2023-0037 ↗</a>
+      </div>
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">06 · 2023 · Conference Paper (Springer LNNS)</p>
+        <p class="pub-title">Enhancing privacy protection in intelligent surveillance: Video blockchain solutions</p>
+        <p class="pub-meta">Moolikagedara, K., Nguyen, M., &amp; Yan, W.Q. — BLOCKCHAIN 2023, LNNS Vol. 778, pp. 42–51</p>
+        <a href="https://doi.org/10.1007/978-3-031-45155-3_5" target="_blank" class="pub-link">doi.org/10.1007/978-3-031-45155-3_5 ↗</a>
+      </div>
+
+      <div class="pub-card fade-in">
+        <p class="pub-num">07 · 2022 · Book Chapter (IGI Global)</p>
+        <p class="pub-title">Visual blockchain for intelligent surveillance in a smart city</p>
+        <p class="pub-meta">Moolikagedara, K., Nguyen, M., &amp; Yan, W.Q. — Blockchain Technologies for Sustainable Development in Smart Cities, pp. 1–13</p>
+        <a href="https://doi.org/10.4018/978-1-7998-9274-8.ch01" target="_blank" class="pub-link">doi.org/10.4018/978-1-7998-9274-8.ch01 ↗</a>
+      </div>
+
+    </div>
+    <div style="margin-top:2rem;text-align:center">
+      <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&hl=en" target="_blank" class="btn btn-outline">View on Google Scholar ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH IN ACTION -->
+<section id="gallery" style="padding:5rem 2.5rem;position:relative;z-index:1;">
+  <div class="container">
+    <p class="section-label fade-in">04 // Research in Action</p>
+    <h2 class="fade-in">Presenting at AUT</h2>
+    <div class="section-divider"></div>
+    <p class="fade-in" style="color:var(--text-muted);max-width:680px;margin-bottom:2.5rem;font-size:16px;line-height:1.8;">
+      Presenting doctoral research on <em style="color:var(--accent)">Blockchain-Powered Authentication for Misinformation in AI-Generated Videos</em> — School of Engineering, Computer and Mathematical Sciences, Auckland University of Technology.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" class="fade-in">
+      <div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;">
+        <img src="pres2.jpg" alt="Kasun presenting blockchain research poster at AUT" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:1.25rem 1.5rem;background:linear-gradient(transparent,rgba(5,13,26,0.95));pointer-events:none;">
+          <p style="font-family:var(--ff-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;margin-bottom:4px;">AUT RESEARCH SHOWCASE</p>
+          <p style="font-size:14px;color:var(--text);line-height:1.4;">Presenting blockchain-powered deepfake detection research</p>
+        </div>
+      </div>
+      <div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;">
+        <img src="pres1.jpg" alt="Kasun engaging with audience at AUT" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:1.25rem 1.5rem;background:linear-gradient(transparent,rgba(5,13,26,0.95));pointer-events:none;">
+          <p style="font-family:var(--ff-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;margin-bottom:4px;">ACADEMIC ENGAGEMENT</p>
+          <p style="font-size:14px;color:var(--text);line-height:1.4;">Engaging with researchers and students at AUT event</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.75rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;" class="fade-in">
+      <div style="font-family:var(--ff-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;flex-shrink:0;">POSTER TITLE</div>
+      <div style="font-size:14px;color:var(--text-muted);flex:1;min-width:200px;font-style:italic;">"Blockchain-Powered Authentication: Reinforcing Identification for Misinformation in AI-Generated Videos" — Kasun Moolikagedara, School of Engineering, Computer and Mathematical Sciences, AUT. Supervisors: Wei Qi Yan, Minh Nguyen.</div>
+      <a href="https://doi.org/10.24135/rangahau-aranga.v4i1.261" target="_blank" class="btn btn-outline" style="flex-shrink:0;font-size:13px;">Read Paper ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- CRYPTO TEACHING -->
+<section id="crypto">
+  <div class="container">
+    <p class="section-label fade-in">05 // Applied Teaching</p>
+    <h2 class="fade-in">Cryptography &amp; Cybersecurity</h2>
+    <div class="section-divider"></div>
+    <p class="crypto-intro fade-in">
+      With a PhD in Computer Science and an MSc in Network &amp; Information Security, I bring practical expertise and academic depth to cybersecurity and cryptography teaching. My research directly intersects with the applied topics covered in postgraduate IT programmes — from blockchain authentication to AI-based threat detection. I draw on resources from <a href="https://asecuritysite.com/" target="_blank" style="color:var(--accent2)">asecuritysite.com</a> to ground teaching in real-world implementation.
+    </p>
+    <div class="crypto-grid">
+
+      <div class="crypto-card fade-in">
+        <span class="icon">🔑</span>
+        <h3>Symmetric &amp; Asymmetric Cryptography</h3>
+        <p>Teaching AES, RSA, and elliptic curve cryptography with hands-on Python implementations. Covering key exchange protocols, digital signatures, and real-world deployment in secure systems.</p>
+        <div class="crypto-topics">
+          <span class="crypto-topic">AES-256</span>
+          <span class="crypto-topic">RSA</span>
+          <span class="crypto-topic">ECC</span>
+          <span class="crypto-topic">Diffie-Hellman</span>
+          <span class="crypto-topic">ECDSA</span>
+        </div>
+      </div>
+
+      <div class="crypto-card fade-in">
+        <span class="icon">⛓️</span>
+        <h3>Blockchain &amp; Distributed Security</h3>
+        <p>PhD-level expertise in blockchain for data integrity and privacy. Teaching consensus mechanisms, smart contracts, and how blockchain underpins secure decentralised systems including surveillance and IoT.</p>
+        <div class="crypto-topics">
+          <span class="crypto-topic">Ethereum</span>
+          <span class="crypto-topic">Smart Contracts</span>
+          <span class="crypto-topic">Consensus Protocols</span>
+          <span class="crypto-topic">Video Blockchain</span>
+        </div>
+      </div>
+
+      <div class="crypto-card fade-in">
+        <span class="icon">🛡️</span>
+        <h3>Network Security &amp; Threat Analysis</h3>
+        <p>Covering the TCP/IP threat landscape, intrusion detection, VPN protocols, firewall architectures, and how to design networks that are resilient against modern attacks including man-in-the-middle and DDoS.</p>
+        <div class="crypto-topics">
+          <span class="crypto-topic">TLS/SSL</span>
+          <span class="crypto-topic">IDS/IPS</span>
+          <span class="crypto-topic">Zero Trust</span>
+          <span class="crypto-topic">VPN</span>
+          <span class="crypto-topic">Firewall</span>
+        </div>
+      </div>
+
+      <div class="crypto-card fade-in">
+        <span class="icon">🤖</span>
+        <h3>AI &amp; Deepfake Security</h3>
+        <p>Pioneering research on using deep learning (YOLO, CNN) to detect AI-generated and manipulated media. Teaching how adversarial machine learning shapes the future of digital forensics and content authentication.</p>
+        <div class="crypto-topics">
+          <span class="crypto-topic">Deepfake Detection</span>
+          <span class="crypto-topic">CNN</span>
+          <span class="crypto-topic">Adversarial ML</span>
+          <span class="crypto-topic">Digital Forensics</span>
+        </div>
+      </div>
+
+      <div class="crypto-card fade-in">
+        <span class="icon">🔏</span>
+        <h3>Hash Functions &amp; Data Integrity</h3>
+        <p>Teaching SHA-2/SHA-3 families, HMAC, Merkle trees, and their role in blockchain and secure storage. Covering collision resistance, preimage attacks, and practical implementations in Python.</p>
+        <div class="crypto-topics">
+          <span class="crypto-topic">SHA-256</span>
+          <span class="crypto-topic">HMAC</span>
+          <span class="crypto-topic">Merkle Trees</span>
+          <span class="crypto-topic">MD5 weaknesses</span>
+        </div>
+      </div>
+
+      <div class="crypto-card fade-in">
+        <span class="icon">🔐</span>
+        <h3>IoT &amp; Smart City Security</h3>
+        <p>Covering privacy-preserving architectures for IoT environments including smart cities and connected vehicles. Drawn directly from published research on video blockchain and distributed surveillance systems.</p>
+        <div class="crypto-topics">
+          <span class="crypto-topic">IoT Security</span>
+          <span class="crypto-topic">Smart City</span>
+          <span class="crypto-topic">MQTT</span>
+          <span class="crypto-topic">Edge Computing</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="crypto-cta fade-in">
+      <div>
+        <h3 style="font-family:var(--ff-serif);font-size:1.3rem;color:#fff;margin-bottom:0.5rem">Explore Applied Security Resources</h3>
+        <p>I use and recommend asecuritysite.com as a practical teaching companion — offering hundreds of hands-on coding exercises in cryptography, network security, and blockchain for postgraduate students.</p>
+      </div>
+      <a href="https://asecuritysite.com/" target="_blank" class="btn btn-primary">Visit asecuritysite.com ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="container">
+    <p class="section-label fade-in">06 // Education</p>
+    <h2 class="fade-in">Academic Background</h2>
+    <div class="section-divider"></div>
+    <div class="edu-grid">
+      <div class="edu-card fade-in">
+        <p class="edu-degree">PhD</p>
+        <p class="edu-field">Computer Science</p>
+        <p class="edu-school">Auckland University of Technology</p>
+        <p class="edu-year">2020 – 2024 · Auckland, New Zealand</p>
+      </div>
+      <div class="edu-card fade-in">
+        <p class="edu-degree">MSc</p>
+        <p class="edu-field">Network and Information Security</p>
+        <p class="edu-school">Kingston University</p>
+        <p class="edu-year">2019 · London, United Kingdom</p>
+      </div>
+      <div class="edu-card fade-in">
+        <p class="edu-degree">UK Honour Degree Equivalent</p>
+        <p class="edu-field">Computer and Information Sciences</p>
+        <p class="edu-school">BCS Sri Lanka Region</p>
+        <p class="edu-year">2017</p>
+      </div>
+      <div class="edu-card fade-in">
+        <p class="edu-degree">Diploma</p>
+        <p class="edu-field">Information Technology</p>
+        <p class="edu-school">ESOFT Metro Campus</p>
+        <p class="edu-year">Sri Lanka</p>
+      </div>
+    </div>
+
+    <!-- CERTS -->
+    <h2 class="fade-in" style="margin-top:4rem;font-size:1.8rem">Certifications</h2>
+    <div class="section-divider"></div>
+    <div class="cert-grid">
+      <div class="cert-card fade-in">
+        <div class="cert-icon">🛡️</div>
+        <h4>Certified in Cybersecurity (CC)</h4>
+        <span>ISC²</span>
+      </div>
+      <div class="cert-card fade-in">
+        <div class="cert-icon">🔐</div>
+        <h4>Securing Cryptocurrencies</h4>
+        <span>Professional Certification</span>
+      </div>
+      <div class="cert-card fade-in">
+        <div class="cert-icon">⛓️</div>
+        <h4>Building an Ethereum Blockchain App</h4>
+        <span>Blockchain Development</span>
+      </div>
+      <div class="cert-card fade-in">
+        <div class="cert-icon">📐</div>
+        <h4>Designing Blockchain Solutions: Making the Case</h4>
+        <span>Solution Architecture</span>
+      </div>
+      <div class="cert-card fade-in">
+        <div class="cert-icon">🌐</div>
+        <h4>Blockchain: Beyond the Basics</h4>
+        <span>Advanced Concepts</span>
+      </div>
+      <div class="cert-card fade-in">
+        <div class="cert-icon">🔗</div>
+        <h4>Introduction to Blockchain</h4>
+        <span>Foundations</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="contact-info fade-in">
+        <p class="section-label">07 // Get in Touch</p>
+        <h2>Let's Connect</h2>
+        <div class="section-divider"></div>
+        <p>I'm open to cybersecurity, SOC analyst, technical support, and postdoctoral or academic roles in AI, security, or computer vision. Auckland-based — remote/hybrid anywhere in NZ considered. Full working rights.</p>
+        <div class="contact-items">
+          <a href="mailto:ktvishwajith@gmail.com" class="contact-item">
+            <div class="ci-icon">📧</div>
+            <div class="ci-text">
+              <span class="ci-label">Email</span>
+              <span class="ci-val">ktvishwajith@gmail.com</span>
+            </div>
+          </a>
+          <a href="tel:0223096296" class="contact-item">
+            <div class="ci-icon">📱</div>
+            <div class="ci-text">
+              <span class="ci-label">Phone</span>
+              <span class="ci-val">022 309 6296</span>
+            </div>
+          </a>
+          <a href="https://www.linkedin.com/in/kasun-mg" target="_blank" class="contact-item">
+            <div class="ci-icon">💼</div>
+            <div class="ci-text">
+              <span class="ci-label">LinkedIn</span>
+              <span class="ci-val">linkedin.com/in/kasun-mg</span>
+            </div>
+          </a>
+          <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&hl=en" target="_blank" class="contact-item">
+            <div class="ci-icon">🎓</div>
+            <div class="ci-text">
+              <span class="ci-label">Google Scholar</span>
+              <span class="ci-val">View Research Profile ↗</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="open-to fade-in" style="transition-delay:0.15s">
+        <h3>Currently Open To</h3>
+        <ul class="role-list">
+          <li>Cybersecurity Analyst / SOC Analyst / Information Security roles</li>
+          <li>Technical Support Analyst / IT Support roles</li>
+          <li>Postdoctoral Research roles in AI, security, or computer vision</li>
+          <li>Academic / Lecturing roles in IT or cybersecurity</li>
+          <li>Contract or consulting roles in blockchain security</li>
+        </ul>
+        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Auckland-based · Remote/hybrid considered anywhere in NZ · Full working rights</p>
+          <a href="mailto:ktvishwajith@gmail.com" class="btn btn-primary" style="width:100%;justify-content:center;">Send me an email ✉</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Kasun Moolikagedara &nbsp;·&nbsp; PhD Computer Science, AUT &nbsp;·&nbsp; Auckland, New Zealand &nbsp;·&nbsp; ktvishwajith@gmail.com</p>
+</footer>
+
+<script>
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>

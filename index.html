@@ -2,1169 +2,1047 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kasun Moolikagedara | Cybersecurity Researcher</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kasun Moolikagedara</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kasun Moolikagedara, PhD — trustworthy AI, video authentication, computer vision and cybersecurity. Auckland, New Zealand.">
+<meta property="og:title" content="Kasun Moolikagedara, PhD">
+<meta property="og:description" content="Research and projects in video authentication, pose analysis and cybersecurity.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-  :root {
-    --navy: #0a1628;
-    --navy-mid: #0f2040;
-    --navy-light: #1a3a6b;
-    --accent: #00c4a1;
-    --accent2: #4f8ef7;
-    --accent3: #f7c948;
-    --bg: #050d1a;
-    --surface: #0d1f35;
-    --surface2: #0f2848;
-    --text: #e8edf5;
-    --text-muted: #7a94b8;
-    --text-dim: #4a6080;
-    --border: rgba(255,255,255,0.07);
-    --glow: rgba(0,196,161,0.15);
-    --radius: 12px;
-    --ff-serif: 'DM Serif Display', Georgia, serif;
-    --ff-sans: 'DM Sans', system-ui, sans-serif;
-    --ff-mono: 'JetBrains Mono', monospace;
+/* Layout: single 1120px column; each section is a band with a narrow label rail on the left, content on the right. Hashes, frame IDs and joint angles are content, set in mono. */
+:root {
+  --paper: #f3f6f5;
+  --surface: #ffffff;
+  --sunk: #e8eeec;
+  --ink: #10201f;
+  --muted: #4a5b59;
+  --line: #d3dcd9;
+  --accent: #0a6670;
+  --accent-soft: #d9ecec;
+  --accent-ink: #ffffff;
+  --signal: #b8460d;
+  --signal-soft: #fbe6d9;
+  --ff-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --ff-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --ff-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+  --wrap: 1120px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0c1514; --surface: #132120; --sunk: #0f1b1a; --ink: #e4eeec; --muted: #9db2ae;
+    --line: #253634; --accent: #55c2ca; --accent-soft: #143436; --accent-ink: #052224;
+    --signal: #f39a5c; --signal-soft: #3a2416; color-scheme: dark;
   }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--ff-sans);
-    font-size: 16px;
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
-
-  /* ── NOISE TEXTURE ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  /* ── GRID LINES BACKGROUND ── */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: rgba(5,13,26,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav-logo {
-    font-family: var(--ff-mono);
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-    text-decoration: none;
-  }
-
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--accent); }
-
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 8rem 2.5rem 4rem;
-    overflow: hidden;
-    z-index: 1;
-  }
-
-  .hero-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-  }
-  .hero-orb-1 { width: 600px; height: 600px; top: -100px; right: -150px; background: radial-gradient(circle, rgba(0,196,161,0.12) 0%, transparent 70%); }
-  .hero-orb-2 { width: 400px; height: 400px; bottom: 0; left: -100px; background: radial-gradient(circle, rgba(79,142,247,0.1) 0%, transparent 70%); }
-
-  .hero-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 4rem;
-    align-items: center;
-    width: 100%;
-  }
-
-  .hero-tag {
-    font-family: var(--ff-mono);
-    font-size: 12px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .hero-tag::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--accent); }
-
-  h1 {
-    font-family: var(--ff-serif);
-    font-size: clamp(2.8rem, 5vw, 4.5rem);
-    line-height: 1.05;
-    color: #fff;
-    margin-bottom: 0.5rem;
-  }
-  h1 em { font-style: italic; color: var(--accent); }
-
-  .hero-title-line2 {
-    font-family: var(--ff-serif);
-    font-size: clamp(1.4rem, 2.5vw, 2.2rem);
-    color: var(--text-muted);
-    font-style: italic;
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-desc {
-    font-size: 17px;
-    color: var(--text-muted);
-    max-width: 560px;
-    margin-bottom: 2.5rem;
-    line-height: 1.8;
-  }
-
-  .hero-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 2.5rem;
-  }
-
-  .tag {
-    font-family: var(--ff-mono);
-    font-size: 11px;
-    padding: 5px 12px;
-    border-radius: 4px;
-    border: 1px solid;
-    letter-spacing: 0.05em;
-  }
-  .tag-green { border-color: rgba(0,196,161,0.4); color: var(--accent); background: rgba(0,196,161,0.06); }
-  .tag-blue { border-color: rgba(79,142,247,0.4); color: var(--accent2); background: rgba(79,142,247,0.06); }
-  .tag-gold { border-color: rgba(247,201,72,0.4); color: var(--accent3); background: rgba(247,201,72,0.06); }
-
-  .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0.75rem 1.75rem;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-  }
-  .btn-primary { background: var(--accent); color: var(--navy); }
-  .btn-primary:hover { background: #00e0b8; transform: translateY(-1px); }
-  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ── PHOTO CARD ── */
-  .hero-photo-wrap {
-    position: relative;
-    display: flex;
-    justify-content: center;
-  }
-
-  .photo-frame {
-    position: relative;
-    width: 340px;
-    height: 420px;
-  }
-
-  .photo-frame::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2), transparent);
-    border-radius: 20px;
-    z-index: 0;
-  }
-
-  .photo-frame img {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 18px;
-    display: block;
-  }
-
-  .photo-badge {
-    position: absolute;
-    bottom: -16px;
-    left: -20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-family: var(--ff-mono);
-    font-size: 11px;
-    color: var(--accent);
-    z-index: 2;
-    white-space: nowrap;
-  }
-  .photo-badge strong { display: block; font-size: 18px; color: #fff; font-family: var(--ff-sans); margin-bottom: 2px; }
-
-  .photo-badge2 {
-    position: absolute;
-    top: -16px;
-    right: -20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 11px;
-    color: var(--text-muted);
-    z-index: 2;
-    font-family: var(--ff-mono);
-    white-space: nowrap;
-  }
-  .photo-badge2 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 6px; animation: pulse 2s infinite; }
-
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
-
-  /* ── SECTION BASE ── */
-  section {
-    position: relative;
-    z-index: 1;
-    padding: 6rem 2.5rem;
-  }
-
-  .container { max-width: 1100px; margin: 0 auto; }
-
-  .section-label {
-    font-family: var(--ff-mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-
-  h2 {
-    font-family: var(--ff-serif);
-    font-size: clamp(2rem, 4vw, 3rem);
-    color: #fff;
-    margin-bottom: 1rem;
-    line-height: 1.1;
-  }
-
-  .section-divider {
-    width: 48px;
-    height: 2px;
-    background: var(--accent);
-    margin-bottom: 3rem;
-  }
-
-  /* ── ABOUT ── */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: start;
-  }
-
-  .about-text p { color: var(--text-muted); margin-bottom: 1rem; font-size: 16px; line-height: 1.8; }
-
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    text-align: center;
-  }
-  .stat-num { font-family: var(--ff-serif); font-size: 2.5rem; color: var(--accent); display: block; }
-  .stat-label { font-size: 12px; color: var(--text-muted); font-family: var(--ff-mono); letter-spacing: 0.05em; }
-
-  .skill-clusters { display: flex; flex-direction: column; gap: 1.5rem; }
-
-  .skill-cluster h4 {
-    font-size: 11px;
-    font-family: var(--ff-mono);
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-
-  .skill-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-
-  .pill {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 13px;
-    padding: 5px 14px;
-    border-radius: 100px;
-    transition: all 0.2s;
-  }
-  .pill:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ── EXPERIENCE ── */
-  #experience { background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 50%, var(--bg) 100%); }
-
-  .timeline { position: relative; padding-left: 2rem; }
-  .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, var(--accent), var(--accent2), transparent); }
-
-  .tl-item {
-    position: relative;
-    padding-left: 2rem;
-    padding-bottom: 3rem;
-  }
-  .tl-item::before {
-    content: '';
-    position: absolute;
-    left: -2rem;
-    top: 6px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--bg);
-    box-shadow: 0 0 0 3px rgba(0,196,161,0.2);
-    transform: translateX(-4.5px);
-  }
-
-  .tl-date {
-    font-family: var(--ff-mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-    margin-bottom: 0.5rem;
-  }
-
-  .tl-org {
-    font-size: 12px;
-    color: var(--text-dim);
-    font-family: var(--ff-mono);
-    margin-bottom: 0.25rem;
-  }
-
-  .tl-role {
-    font-family: var(--ff-serif);
-    font-size: 1.4rem;
-    color: #fff;
-    margin-bottom: 0.75rem;
-  }
-
-  .tl-desc { color: var(--text-muted); font-size: 15px; line-height: 1.75; }
-
-  .tl-bullets { list-style: none; margin-top: 0.75rem; display: flex; flex-direction: column; gap: 6px; }
-  .tl-bullets li { color: var(--text-muted); font-size: 14px; padding-left: 1.25rem; position: relative; }
-  .tl-bullets li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 12px; }
-
-  /* ── PUBLICATIONS ── */
-  .pub-grid { display: flex; flex-direction: column; gap: 1.25rem; }
-
-  .pub-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    transition: border-color 0.2s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .pub-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--accent);
-  }
-  .pub-card:hover { border-color: rgba(0,196,161,0.3); transform: translateX(4px); }
-
-  .pub-num {
-    font-family: var(--ff-mono);
-    font-size: 11px;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-  }
-
-  .pub-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 0.5rem; line-height: 1.5; }
-  .pub-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 0.75rem; }
-
-  .pub-link {
-    font-family: var(--ff-mono);
-    font-size: 11px;
-    color: var(--accent2);
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    border: 1px solid rgba(79,142,247,0.3);
-    padding: 3px 10px;
-    border-radius: 4px;
-    transition: all 0.2s;
-    display: inline-block;
-  }
-  .pub-link:hover { background: rgba(79,142,247,0.1); }
-
-  /* ── CRYPTO TEACHING ── */
-  #crypto { background: var(--surface); }
-
-  .crypto-intro { color: var(--text-muted); max-width: 700px; margin-bottom: 3rem; font-size: 16px; line-height: 1.8; }
-
-  .crypto-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .crypto-card {
-    background: var(--navy);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.75rem;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-  .crypto-card:hover { transform: translateY(-4px); border-color: rgba(0,196,161,0.3); }
-
-  .crypto-card .icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    display: block;
-  }
-
-  .crypto-card h3 { font-size: 1rem; font-weight: 500; color: #fff; margin-bottom: 0.5rem; }
-  .crypto-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
-
-  .crypto-topics { display: flex; flex-wrap: wrap; gap: 6px; }
-  .crypto-topic {
-    font-family: var(--ff-mono);
-    font-size: 10px;
-    padding: 3px 8px;
-    background: rgba(0,196,161,0.08);
-    border: 1px solid rgba(0,196,161,0.2);
-    color: var(--accent);
-    border-radius: 3px;
-  }
-
-  .crypto-cta {
-    margin-top: 3rem;
-    background: var(--navy);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-  }
-  .crypto-cta p { color: var(--text-muted); font-size: 15px; max-width: 600px; }
-
-  /* ── CERTS ── */
-  .cert-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-
-  .cert-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    transition: border-color 0.2s;
-  }
-  .cert-card:hover { border-color: var(--accent2); }
-  .cert-card .cert-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
-  .cert-card h4 { font-size: 14px; color: var(--text); line-height: 1.4; }
-  .cert-card span { font-size: 12px; color: var(--accent); font-family: var(--ff-mono); }
-
-  /* ── EDUCATION ── */
-  .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-  .edu-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.75rem;
-    transition: border-color 0.2s;
-  }
-  .edu-card:hover { border-color: rgba(0,196,161,0.3); }
-  .edu-degree { font-size: 13px; font-weight: 500; color: var(--accent); font-family: var(--ff-mono); margin-bottom: 0.5rem; }
-  .edu-field { font-size: 1.05rem; color: #fff; margin-bottom: 0.25rem; }
-  .edu-school { font-size: 14px; color: var(--text-muted); margin-bottom: 0.25rem; }
-  .edu-year { font-size: 12px; color: var(--text-dim); font-family: var(--ff-mono); }
-
-  /* ── CONTACT ── */
-  #contact { background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%); }
-
-  .contact-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: start;
-  }
-
-  .contact-info h2 { margin-bottom: 1rem; }
-  .contact-info p { color: var(--text-muted); margin-bottom: 2rem; font-size: 16px; }
-
-  .contact-items { display: flex; flex-direction: column; gap: 1rem; }
-  .contact-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    text-decoration: none;
-    transition: border-color 0.2s;
-  }
-  .contact-item:hover { border-color: var(--accent); }
-  .contact-item .ci-icon { width: 36px; height: 36px; background: rgba(0,196,161,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-  .contact-item .ci-text { display: flex; flex-direction: column; }
-  .contact-item .ci-label { font-size: 11px; color: var(--text-dim); font-family: var(--ff-mono); letter-spacing: 0.05em; }
-  .contact-item .ci-val { font-size: 14px; color: var(--text); }
-
-  .open-to {
-    background: var(--navy);
-    border: 1px solid rgba(0,196,161,0.2);
-    border-radius: var(--radius);
-    padding: 2rem;
-  }
-  .open-to h3 { font-family: var(--ff-serif); font-size: 1.5rem; color: #fff; margin-bottom: 1rem; }
-  .role-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .role-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-  .role-list li::before { content: '✓'; color: var(--accent); font-weight: 600; flex-shrink: 0; }
-
-  /* ── FOOTER ── */
-  footer {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 2rem;
-    border-top: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--text-dim);
-    font-family: var(--ff-mono);
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { gap: 1.25rem; }
-    .hero { padding: 7rem 1.5rem 4rem; }
-    .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
-    .hero-photo-wrap { order: -1; }
-    .photo-frame { width: 260px; height: 320px; }
-    section { padding: 4rem 1.5rem; }
-    .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
-    .stats-row { grid-template-columns: repeat(3,1fr); }
-    .crypto-cta { flex-direction: column; }
-  }
-
-  @media (max-width: 600px) {
-    .nav-links { display: none; }
-    h1 { font-size: 2.4rem; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
-  }
-
-  /* ── ANIMATIONS ── */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .fade-in.visible { opacity: 1; transform: none; }
+}
+:root[data-theme="dark"] {
+  --paper: #0c1514; --surface: #132120; --sunk: #0f1b1a; --ink: #e4eeec; --muted: #9db2ae;
+  --line: #253634; --accent: #55c2ca; --accent-soft: #143436; --accent-ink: #052224;
+  --signal: #f39a5c; --signal-soft: #3a2416; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--ff-body); font-size: 17px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--ff-display); line-height: 1.1; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 700; }
+p { margin: 0; }
+.mono { font-family: var(--ff-mono); font-size: 0.82em; }
+.wrap {
+  max-width: var(--wrap); margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+
+/* Header */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--paper); }
+.site-head {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
+}
+.site-head .wrap { display: flex; align-items: center; gap: 24px; height: 60px; }
+.brand { font-family: var(--ff-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.92rem; padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+.nav a:hover { color: var(--ink); background: var(--sunk); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px;
+  border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-family: var(--ff-body);
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); color: var(--accent-ink); }
+.btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Hero */
+.hero { padding-block: 64px 56px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 56px; align-items: center; }
+.eyebrow { font-family: var(--ff-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+.hero h1 { font-size: clamp(2.6rem, 6.4vw, 4.6rem); font-weight: 800; letter-spacing: -0.03em; }
+.hero .role { font-family: var(--ff-display); font-weight: 500; font-size: clamp(1.15rem, 2.2vw, 1.5rem); color: var(--muted); margin-top: 10px; }
+.hero .lede { max-width: 60ch; margin-top: 22px; color: var(--ink); font-size: 1.08rem; }
+.hero .btn-row { margin-top: 28px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
+.facts b { color: var(--ink); font-family: var(--ff-display); font-weight: 700; }
+.portrait { margin: 0; }
+.portrait img { width: 100%; height: auto; aspect-ratio: 413 / 531; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--line); }
+.portrait figcaption { margin-top: 10px; font-family: var(--ff-mono); font-size: 0.72rem; color: var(--muted); line-height: 1.5; overflow-wrap: anywhere; }
+.portrait figcaption strong { color: var(--accent); font-weight: 500; }
+
+/* Sections */
+.band { padding-block: 72px; border-top: 1px solid var(--line); }
+.band.alt { background: var(--surface); }
+.sec-head { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 32px; margin-bottom: 36px; }
+.sec-label { font-family: var(--ff-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 10px; }
+.sec-intro { max-width: 68ch; margin-top: 14px; color: var(--muted); }
+.body-grid { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 32px; }
+.body-grid > :first-child { min-width: 0; }
+.body-grid > .content { grid-column: 2; min-width: 0; }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-bottom: 36px; }
+.step { display: grid; gap: 8px; align-content: start; }
+.step .n { font-family: var(--ff-mono); font-size: 0.78rem; color: var(--accent); }
+.step h3 { font-size: 1.08rem; }
+.step p { color: var(--muted); font-size: 0.98rem; }
+
+/* Demo panels */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.band.alt .demo { background: var(--paper); }
+.demo-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.demo-head .title { font-family: var(--ff-mono); font-size: 0.8rem; color: var(--muted); }
+.demo-head .title b { color: var(--ink); font-weight: 500; }
+.live { display: inline-flex; align-items: center; gap: 6px; font-family: var(--ff-mono); font-size: 0.72rem; color: var(--accent); }
+.live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.demo-body { padding: 20px; display: grid; gap: 18px; }
+
+/* Chain demo */
+.frames { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.frame-btn { all: unset; cursor: pointer; display: grid; gap: 6px; border-radius: 8px; padding: 4px; border: 2px solid transparent; }
+.frame-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.frame-btn[aria-pressed="true"] { border-color: var(--accent); }
+.frame-btn canvas { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 5px; display: block; background: var(--sunk); }
+.frame-btn span { font-family: var(--ff-mono); font-size: 0.7rem; color: var(--muted); text-align: center; }
+.ledger-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table.ledger { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 560px; }
+.ledger th, .ledger td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.ledger th { font-weight: 600; color: var(--muted); font-size: 0.8rem; background: var(--sunk); }
+.ledger tr:last-child td { border-bottom: 0; }
+.ledger td.mono { font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
+.chip.ok { background: var(--accent-soft); color: var(--accent); }
+.chip.bad { background: var(--signal-soft); color: var(--signal); }
+.chip.warn { background: var(--sunk); color: var(--muted); border: 1px dashed var(--signal); }
+.verdict { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 8px; background: var(--accent-soft); color: var(--ink); }
+.verdict.bad { background: var(--signal-soft); }
+.verdict .mark { font-family: var(--ff-mono); font-weight: 500; color: var(--accent); flex-shrink: 0; }
+.verdict.bad .mark { color: var(--signal); }
+.results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; margin-top: 28px; background: var(--surface); }
+.band.alt .results { background: var(--paper); }
+.results div { padding: 16px 18px; border-right: 1px solid var(--line); }
+.results div:last-child { border-right: 0; }
+.results b { display: block; font-family: var(--ff-display); font-size: 1.7rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.results span { font-size: 0.85rem; color: var(--muted); }
+.fine { font-size: 0.85rem; color: var(--muted); }
+
+/* Gallery */
+.gallery { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-top: 36px; }
+.gallery figure { margin: 0; }
+.gallery img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--line); }
+.gallery figcaption { margin-top: 8px; font-size: 0.88rem; color: var(--muted); }
+
+/* Pose demo */
+.pose-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.stage { position: relative; border-radius: 10px; overflow: hidden; background: var(--sunk); aspect-ratio: 3 / 2; }
+.stage img, .stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.stage video { transform: scaleX(-1); }
+.stage canvas.mirror { transform: scaleX(-1); }
+.stage .status { position: absolute; left: 10px; bottom: 10px; right: 10px; font-family: var(--ff-mono); font-size: 0.74rem; background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink); padding: 6px 10px; border-radius: 6px; }
+.readout { display: grid; gap: 14px; }
+.angles { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.angles td { padding: 7px 0; border-bottom: 1px solid var(--line); }
+.angles td:last-child { text-align: right; font-family: var(--ff-mono); font-variant-numeric: tabular-nums; }
+.assess { padding: 14px 16px; border-radius: 8px; background: var(--sunk); font-size: 0.95rem; }
+.assess b { font-family: var(--ff-display); }
+.assess.ok { background: var(--accent-soft); }
+.assess.bad { background: var(--signal-soft); }
+.file-label { position: relative; overflow: hidden; }
+.file-label input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Projects */
+.projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.project { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: grid; gap: 12px; align-content: start; }
+.band.alt .project { background: var(--paper); }
+.project.featured { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 32px; }
+.project.featured .p-side { grid-row: 1 / span 4; grid-column: 2; align-self: stretch; }
+.p-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.status-chip { font-family: var(--ff-mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+.status-chip.building { border-color: var(--accent); color: var(--accent); }
+.p-kicker { font-family: var(--ff-mono); font-size: 0.74rem; color: var(--muted); }
+.project p { color: var(--muted); font-size: 0.98rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags li { list-style: none; font-family: var(--ff-mono); font-size: 0.72rem; padding: 3px 8px; border-radius: 5px; background: var(--sunk); color: var(--ink); }
+.tags { padding: 0; margin: 0; }
+.p-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.96rem; display: grid; gap: 4px; }
+.lineage { display: grid; gap: 10px; background: var(--sunk); border-radius: 10px; padding: 18px; font-size: 0.92rem; }
+.lineage .row { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 12px; }
+.lineage .row span:first-child { font-family: var(--ff-mono); font-size: 0.74rem; color: var(--accent); padding-top: 2px; }
+
+/* Publications */
+.pubs { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.pub { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.pub .yr { font-family: var(--ff-mono); font-size: 0.85rem; color: var(--muted); padding-top: 3px; font-variant-numeric: tabular-nums; }
+.pub .t { font-weight: 600; color: var(--ink); line-height: 1.4; }
+.pub .m { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+.pub .m em { font-style: italic; }
+.pub a { font-family: var(--ff-mono); font-size: 0.76rem; display: inline-block; margin-top: 6px; overflow-wrap: anywhere; }
+.pub .kind { font-family: var(--ff-mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Experience */
+.timeline { display: grid; gap: 0; }
+.job { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.job:first-child { padding-top: 0; }
+.job .when { font-family: var(--ff-mono); font-size: 0.8rem; color: var(--muted); padding-top: 4px; font-variant-numeric: tabular-nums; }
+.job .org { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
+.job ul { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 4px; color: var(--muted); font-size: 0.97rem; }
+
+/* Credentials */
+.cred-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.cred-col h3 { font-size: 1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.cred-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.cred-list li { padding: 11px 0; border-bottom: 1px solid var(--line); display: grid; gap: 2px; }
+.cred-list li:first-child { border-top: 1px solid var(--line); }
+.cred-list .what { font-weight: 600; line-height: 1.35; }
+.cred-list .who { font-size: 0.88rem; color: var(--muted); }
+.cred-list .state { font-family: var(--ff-mono); font-size: 0.7rem; color: var(--accent); }
+.cred-list .state.prog { color: var(--signal); }
+
+/* Contact */
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; }
+.contact-lines { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.cline { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cline .k { font-family: var(--ff-mono); font-size: 0.74rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.cline .v { font-weight: 600; overflow-wrap: anywhere; user-select: all; }
+.cline a.v { user-select: auto; }
+.copy { all: unset; cursor: pointer; font-family: var(--ff-mono); font-size: 0.74rem; color: var(--accent); padding: 6px 8px; border-radius: 6px; }
+.copy:hover { background: var(--accent-soft); }
+.copy:focus-visible { outline: 2px solid var(--accent); }
+.open-to { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+.band.alt .open-to { background: var(--paper); }
+.open-to ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 6px; color: var(--muted); }
+.open-to .fine { margin-top: 16px; }
+
+footer { padding-block: 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.88rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+[data-github][hidden] { display: none !important; }
+
+/* Responsive */
+@media (max-width: 920px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .portrait { max-width: 260px; order: -1; }
+  .sec-head, .body-grid { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .body-grid > .content { grid-column: 1; }
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .frames { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pose-grid { grid-template-columns: minmax(0, 1fr); }
+  .projects { grid-template-columns: minmax(0, 1fr); }
+  .project.featured { grid-template-columns: minmax(0, 1fr); }
+  .project.featured .p-side { grid-row: auto; grid-column: auto; }
+  .cred-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .contact-grid { grid-template-columns: minmax(0, 1fr); }
+  .gallery { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  body { font-size: 16px; }
+  .band { padding-block: 52px; }
+  .hero { padding-block: 36px 40px; }
+  .portrait { max-width: 200px; }
+  .site-head .wrap { gap: 12px; }
+  .results { grid-template-columns: minmax(0, 1fr); }
+  .results div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .results div:last-child { border-bottom: 0; }
+  .job, .pub { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .cline { grid-template-columns: minmax(0, 1fr) auto; }
+  .cline .k { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">KM // Portfolio</a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#publications">Publications</a></li>
-    <li><a href="#gallery">Research</a></li>
-    <li><a href="#crypto">Teaching</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top">Kasun<span>.</span>M</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#research">Research</a>
+      <a href="#pose">Pose demo</a>
+      <a href="#projects">Projects</a>
+      <a href="#publications">Publications</a>
+      <a href="#experience">Experience</a>
+      <a href="#credentials">Credentials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
 
-<!-- HERO -->
+<main id="top">
+
+<!-- ============ HERO ============ -->
 <section class="hero">
-  <div class="hero-orb hero-orb-1"></div>
-  <div class="hero-orb hero-orb-2"></div>
-  <div class="hero-inner">
-    <div class="hero-content fade-in">
-      <p class="hero-tag">PhD · Cybersecurity · AI · Blockchain</p>
-      <h1>Kasun <em>Moolikagedara</em></h1>
-      <p class="hero-title-line2">Cybersecurity Researcher &amp; IT Professional</p>
-      <p class="hero-desc">Auckland-based researcher with 8+ years spanning cybersecurity, AI-driven systems, and blockchain-based data integrity. PhD from AUT · MSc from Kingston University, UK.</p>
-      <div class="hero-tags">
-        <span class="tag tag-green">Blockchain Security</span>
-        <span class="tag tag-blue">Deep Learning · YOLO · CNN</span>
-        <span class="tag tag-gold">Deepfake Detection</span>
-        <span class="tag tag-green">Python · OpenCV</span>
-        <span class="tag tag-blue">IT Infrastructure</span>
-        <span class="tag tag-gold">Academic Publishing</span>
-      </div>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">PhD · Trustworthy AI · Cybersecurity · Auckland, NZ</p>
+      <h1>Kasun Moolikagedara</h1>
+      <p class="role">Researcher in video authentication and computer vision. IT professional who keeps systems running.</p>
+      <p class="lede">I build tools that check whether video is genuine, measure how people move from a single camera, and keep secure systems working day to day. Both demos below run in your browser.</p>
       <div class="btn-row">
-        <a href="#publications" class="btn btn-primary">View Publications</a>
-        <a href="https://www.linkedin.com/in/kasun-mg" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
-        <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&hl=en" target="_blank" class="btn btn-outline">Google Scholar ↗</a>
+        <a class="btn primary" href="#research">Try the live demos</a>
+        <a class="btn" href="https://www.linkedin.com/in/kasun-mg" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="btn" href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar ↗</a>
+        <a class="btn" data-github href="#" target="_blank" rel="noopener" hidden>GitHub ↗</a>
+      </div>
+      <div class="facts">
+        <span><b>7</b> peer-reviewed publications</span>
+        <span><b>PhD</b> Computer Science, AUT</span>
+        <span><b>MSc</b> Network &amp; Information Security, Kingston</span>
+        <span><b>8+</b> years in IT</span>
       </div>
     </div>
-    <div class="hero-photo-wrap fade-in" style="transition-delay:0.2s">
-      <div class="photo-frame">
-        <div class="photo-badge2"><span class="dot"></span>Open to Opportunities · Auckland, NZ</div>
-        <img src="aa.jpg" alt="Kasun Moolikagedara">
-        <div class="photo-badge">
-          <strong>7</strong>
-          peer-reviewed publications
-        </div>
-      </div>
-    </div>
+    <figure class="portrait">
+      <img src="kasun.jpg" alt="Portrait of Kasun Moolikagedara" width="413" height="531">
+      <figcaption>kasun.jpg · sha256 <strong id="photo-hash">computing…</strong><br>Fingerprint computed in your browser, the same way my research verifies video frames.</figcaption>
+    </figure>
   </div>
 </section>
 
-<!-- ABOUT -->
-<section id="about">
-  <div class="container">
-    <p class="section-label fade-in">01 // About</p>
-    <h2 class="fade-in">Research at the edge of<br><em style="font-style:italic;color:var(--accent)">security & intelligence</em></h2>
-    <div class="section-divider"></div>
-    <div class="about-grid">
-      <div class="about-text fade-in">
-        <p>I'm an Auckland-based IT professional and cybersecurity researcher with 8+ years of experience spanning technical support, information security research, and AI-driven systems development.</p>
-        <p>My background sits at an unusual intersection: deep hands-on IT support experience combined with postgraduate research in security, AI, and data integrity. My PhD at AUT developed <strong style="color:var(--text)">video blockchain frameworks</strong> for intelligent surveillance — using YOLO and CNN deep learning models to detect manipulated or AI-generated content and protect data integrity.</p>
-        <p>I hold a PhD in Computer Science from Auckland University of Technology and an MSc in Network &amp; Information Security from Kingston University, UK. I've published 7 peer-reviewed papers on AI-powered video authentication, blockchain-based data protection, and computer vision systems for security applications.</p>
-        <div class="stats-row">
-          <div class="stat-card">
-            <span class="stat-num">8+</span>
-            <span class="stat-label">Years Experience</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-num">7</span>
-            <span class="stat-label">Publications</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-num">1K+</span>
-            <span class="stat-label">Support Tickets</span>
-          </div>
-        </div>
-      </div>
-      <div class="skill-clusters fade-in" style="transition-delay:0.15s">
-        <div class="skill-cluster">
-          <h4>🔐 Security &amp; Research</h4>
-          <div class="skill-pills">
-            <span class="pill">Blockchain Security</span>
-            <span class="pill">Cryptography</span>
-            <span class="pill">Deepfake Detection</span>
-            <span class="pill">Digital Forensics</span>
-            <span class="pill">Network Security</span>
-            <span class="pill">IoT Privacy</span>
-          </div>
-        </div>
-        <div class="skill-cluster">
-          <h4>🤖 AI &amp; Computer Vision</h4>
-          <div class="skill-pills">
-            <span class="pill">YOLO</span>
-            <span class="pill">CNN</span>
-            <span class="pill">OpenCV</span>
-            <span class="pill">Python</span>
-            <span class="pill">Deep Learning</span>
-            <span class="pill">Object Detection</span>
-          </div>
-        </div>
-        <div class="skill-cluster">
-          <h4>🖥️ IT Infrastructure</h4>
-          <div class="skill-pills">
-            <span class="pill">Windows Server</span>
-            <span class="pill">Active Directory</span>
-            <span class="pill">ServiceNow</span>
-            <span class="pill">Endpoint Security</span>
-            <span class="pill">L1/L2 Support</span>
-          </div>
-        </div>
-        <div class="skill-cluster">
-          <h4>📚 Academic</h4>
-          <div class="skill-pills">
-            <span class="pill">Peer Review</span>
-            <span class="pill">Curriculum Design</span>
-            <span class="pill">Research Supervision</span>
-            <span class="pill">Technical Writing</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- EXPERIENCE -->
-<section id="experience">
-  <div class="container">
-    <p class="section-label fade-in">02 // Experience</p>
-    <h2 class="fade-in">Professional Journey</h2>
-    <div class="section-divider"></div>
-    <div class="timeline">
-
-      <div class="tl-item fade-in">
-        <p class="tl-date">February 2025 – Present</p>
-        <p class="tl-org">Verifone · Auckland, New Zealand</p>
-        <h3 class="tl-role">IT Support &amp; Security Role</h3>
-        <p class="tl-desc">Providing Level 1 and Level 2 technical support and software-related work for secure payment terminals. Managing incidents via ServiceNow and maintaining zero major security incidents across 500+ devices monthly.</p>
-      </div>
-
-      <div class="tl-item fade-in">
-        <p class="tl-date">August 2020 – December 2024</p>
-        <p class="tl-org">Auckland University of Technology · Auckland, New Zealand</p>
-        <h3 class="tl-role">PhD Researcher — AI Security, Blockchain &amp; Computer Vision</h3>
-        <ul class="tl-bullets">
-          <li>Developed video blockchain frameworks to protect integrity and privacy of surveillance footage in smart city environments</li>
-          <li>Designed AI-driven authentication models to detect manipulated or AI-generated video — applicable to deepfake detection and digital forensics</li>
-          <li>Applied YOLO and CNN deep learning models for object recognition and anomaly detection in security footage</li>
-          <li>Built Python and OpenCV pipelines for large-scale video data processing, validation and analysis</li>
-          <li>Published 5 peer-reviewed journal articles on blockchain security, AI video authentication, and smart city surveillance</li>
-          <li>Presented research findings to academic panels, industry partners, and international conference audiences</li>
-        </ul>
-      </div>
-
-      <div class="tl-item fade-in">
-        <p class="tl-date">August 2022 – February 2023</p>
-        <p class="tl-org">Auckland University of Technology · Auckland, New Zealand</p>
-        <h3 class="tl-role">Research Assistant — Computer Vision &amp; AI Health &amp; Safety Systems</h3>
-        <ul class="tl-bullets">
-          <li>Applied Computer Vision and ML models to assess human pose and detect musculoskeletal injury risk in real-time</li>
-          <li>Developed and debugged systems using Python, JavaScript, and OpenCV</li>
-          <li>Authored technical reports and presented findings to stakeholders, supporting adoption of smart safety monitoring systems</li>
-        </ul>
-      </div>
-
-      <div class="tl-item fade-in">
-        <p class="tl-date">February 2019 – July 2022</p>
-        <p class="tl-org">Saegis Campus · Sri Lanka (Remote from NZ)</p>
-        <h3 class="tl-role">Programme Leader — IT Certificate &amp; Diploma Programmes</h3>
-        <ul class="tl-bullets">
-          <li>End-to-end programme leadership: strategy development, curriculum design, assessment frameworks, quality assurance, and compliance with full autonomous decision-making</li>
-          <li>Led development and launch of new IT programmes — from market identification through scoping, content design, and accredited delivery</li>
-          <li>Built, led, and mentored a teaching team — setting delivery standards and developing staff capability</li>
-          <li>Designed forward-thinking IT department strategy aligned to industry trends and learner career pathways</li>
-          <li>Mentored students on study pathway selection, supporting academic progression and pastoral wellbeing</li>
-          <li>Delivered all responsibilities remotely from New Zealand, demonstrating self-direction and effective distributed team management</li>
-        </ul>
-      </div>
-
-      <div class="tl-item fade-in">
-        <p class="tl-date">May 2016 – September 2020</p>
-        <p class="tl-org">Analytical Instruments (Pvt) Ltd · Colombo, Sri Lanka</p>
-        <h3 class="tl-role">IT Support Specialist — Infrastructure &amp; Security</h3>
-        <ul class="tl-bullets">
-          <li>Administered Windows Server, Active Directory, and user account management across the organisation</li>
-          <li>Monitored and managed Kaspersky Endpoint Security — applying patches, updates and security configurations</li>
-          <li>Resolved 1,000+ L1/L2 support tickets with a 95% user satisfaction rating</li>
-          <li>Maintained 99.9% network uptime across infrastructure critical to health supply operations</li>
-          <li>Maintained IT documentation, audit records, and compliance logs to support organisational security posture</li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- PUBLICATIONS -->
-<section id="publications">
-  <div class="container">
-    <p class="section-label fade-in">03 // Research Output</p>
-    <h2 class="fade-in">Publications</h2>
-    <div class="section-divider"></div>
-    <div class="pub-grid">
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">01 · 2025 · Journal Article</p>
-        <p class="pub-title">Blockchain-powered authentication: Reinforcing identification for misinformation in AI-generated videos</p>
-        <p class="pub-meta">Moolikagedara, K. — Rangahau Aranga: AUT Graduate Review, 4(1)</p>
-        <a href="https://doi.org/10.24135/rangahau-aranga.v4i1.261" target="_blank" class="pub-link">doi.org/10.24135/rangahau-aranga.v4i1.261 ↗</a>
-      </div>
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">02 · 2024 · Doctoral Dissertation</p>
-        <p class="pub-title">Computational methods for video blockchain in intelligent surveillance</p>
-        <p class="pub-meta">Moolikagedara, K. — Auckland University of Technology (PhD Thesis)</p>
-        <a href="http://hdl.handle.net/10292/18151" target="_blank" class="pub-link">hdl.handle.net/10292/18151 ↗</a>
-      </div>
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">03 · 2024 · Journal Article</p>
-        <p class="pub-title">Advancing video data privacy preservation in IoT networks through video blockchain</p>
-        <p class="pub-meta">Moolikagedara, K., Nguyen, M., Yan, W.Q., &amp; Li, X.J. — Information, 15(3), 171</p>
-        <a href="https://doi.org/10.3390/info15030171" target="_blank" class="pub-link">doi.org/10.3390/info15030171 ↗</a>
-      </div>
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">04 · 2023 · Journal Article</p>
-        <p class="pub-title">Video blockchain: A decentralised approach for secure and sustainable networks with distributed video footage from vehicle-mounted cameras in smart cities</p>
-        <p class="pub-meta">Moolikagedara, K., Nguyen, M., Yan, W.Q., &amp; Li, X.J. — Electronics, 12(17), 3621</p>
-        <a href="https://doi.org/10.3390/electronics12173621" target="_blank" class="pub-link">doi.org/10.3390/electronics12173621 ↗</a>
-      </div>
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">05 · 2023 · Journal Article</p>
-        <p class="pub-title">Smart vision-based analysis and error deduction of human pose to reduce musculoskeletal disorders in construction</p>
-        <p class="pub-meta">Purushothaman, M.B., &amp; Moolikagedara, K. — Smart and Sustainable Built Environment</p>
-        <a href="https://doi.org/10.1108/SASBE-02-2023-0037" target="_blank" class="pub-link">doi.org/10.1108/SASBE-02-2023-0037 ↗</a>
-      </div>
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">06 · 2023 · Conference Paper (Springer LNNS)</p>
-        <p class="pub-title">Enhancing privacy protection in intelligent surveillance: Video blockchain solutions</p>
-        <p class="pub-meta">Moolikagedara, K., Nguyen, M., &amp; Yan, W.Q. — BLOCKCHAIN 2023, LNNS Vol. 778, pp. 42–51</p>
-        <a href="https://doi.org/10.1007/978-3-031-45155-3_5" target="_blank" class="pub-link">doi.org/10.1007/978-3-031-45155-3_5 ↗</a>
-      </div>
-
-      <div class="pub-card fade-in">
-        <p class="pub-num">07 · 2022 · Book Chapter (IGI Global)</p>
-        <p class="pub-title">Visual blockchain for intelligent surveillance in a smart city</p>
-        <p class="pub-meta">Moolikagedara, K., Nguyen, M., &amp; Yan, W.Q. — Blockchain Technologies for Sustainable Development in Smart Cities, pp. 1–13</p>
-        <a href="https://doi.org/10.4018/978-1-7998-9274-8.ch01" target="_blank" class="pub-link">doi.org/10.4018/978-1-7998-9274-8.ch01 ↗</a>
-      </div>
-
-    </div>
-    <div style="margin-top:2rem;text-align:center">
-      <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&hl=en" target="_blank" class="btn btn-outline">View on Google Scholar ↗</a>
-    </div>
-  </div>
-</section>
-
-<!-- RESEARCH IN ACTION -->
-<section id="gallery" style="padding:5rem 2.5rem;position:relative;z-index:1;">
-  <div class="container">
-    <p class="section-label fade-in">04 // Research in Action</p>
-    <h2 class="fade-in">Presenting at AUT</h2>
-    <div class="section-divider"></div>
-    <p class="fade-in" style="color:var(--text-muted);max-width:680px;margin-bottom:2.5rem;font-size:16px;line-height:1.8;">
-      Presenting doctoral research on <em style="color:var(--accent)">Blockchain-Powered Authentication for Misinformation in AI-Generated Videos</em> — School of Engineering, Computer and Mathematical Sciences, Auckland University of Technology.
-    </p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" class="fade-in">
-      <div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;">
-        <img src="pres2.jpg" alt="Kasun presenting blockchain research poster at AUT" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:1.25rem 1.5rem;background:linear-gradient(transparent,rgba(5,13,26,0.95));pointer-events:none;">
-          <p style="font-family:var(--ff-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;margin-bottom:4px;">AUT RESEARCH SHOWCASE</p>
-          <p style="font-size:14px;color:var(--text);line-height:1.4;">Presenting blockchain-powered deepfake detection research</p>
-        </div>
-      </div>
-      <div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;">
-        <img src="pres1.jpg" alt="Kasun engaging with audience at AUT" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:1.25rem 1.5rem;background:linear-gradient(transparent,rgba(5,13,26,0.95));pointer-events:none;">
-          <p style="font-family:var(--ff-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;margin-bottom:4px;">ACADEMIC ENGAGEMENT</p>
-          <p style="font-size:14px;color:var(--text);line-height:1.4;">Engaging with researchers and students at AUT event</p>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.75rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;" class="fade-in">
-      <div style="font-family:var(--ff-mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;flex-shrink:0;">POSTER TITLE</div>
-      <div style="font-size:14px;color:var(--text-muted);flex:1;min-width:200px;font-style:italic;">"Blockchain-Powered Authentication: Reinforcing Identification for Misinformation in AI-Generated Videos" — Kasun Moolikagedara, School of Engineering, Computer and Mathematical Sciences, AUT. Supervisors: Wei Qi Yan, Minh Nguyen.</div>
-      <a href="https://doi.org/10.24135/rangahau-aranga.v4i1.261" target="_blank" class="btn btn-outline" style="flex-shrink:0;font-size:13px;">Read Paper ↗</a>
-    </div>
-  </div>
-</section>
-
-<!-- CRYPTO TEACHING -->
-<section id="crypto">
-  <div class="container">
-    <p class="section-label fade-in">05 // Applied Teaching</p>
-    <h2 class="fade-in">Cryptography &amp; Cybersecurity</h2>
-    <div class="section-divider"></div>
-    <p class="crypto-intro fade-in">
-      With a PhD in Computer Science and an MSc in Network &amp; Information Security, I bring practical expertise and academic depth to cybersecurity and cryptography teaching. My research directly intersects with the applied topics covered in postgraduate IT programmes — from blockchain authentication to AI-based threat detection. I draw on resources from <a href="https://asecuritysite.com/" target="_blank" style="color:var(--accent2)">asecuritysite.com</a> to ground teaching in real-world implementation.
-    </p>
-    <div class="crypto-grid">
-
-      <div class="crypto-card fade-in">
-        <span class="icon">🔑</span>
-        <h3>Symmetric &amp; Asymmetric Cryptography</h3>
-        <p>Teaching AES, RSA, and elliptic curve cryptography with hands-on Python implementations. Covering key exchange protocols, digital signatures, and real-world deployment in secure systems.</p>
-        <div class="crypto-topics">
-          <span class="crypto-topic">AES-256</span>
-          <span class="crypto-topic">RSA</span>
-          <span class="crypto-topic">ECC</span>
-          <span class="crypto-topic">Diffie-Hellman</span>
-          <span class="crypto-topic">ECDSA</span>
-        </div>
-      </div>
-
-      <div class="crypto-card fade-in">
-        <span class="icon">⛓️</span>
-        <h3>Blockchain &amp; Distributed Security</h3>
-        <p>PhD-level expertise in blockchain for data integrity and privacy. Teaching consensus mechanisms, smart contracts, and how blockchain underpins secure decentralised systems including surveillance and IoT.</p>
-        <div class="crypto-topics">
-          <span class="crypto-topic">Ethereum</span>
-          <span class="crypto-topic">Smart Contracts</span>
-          <span class="crypto-topic">Consensus Protocols</span>
-          <span class="crypto-topic">Video Blockchain</span>
-        </div>
-      </div>
-
-      <div class="crypto-card fade-in">
-        <span class="icon">🛡️</span>
-        <h3>Network Security &amp; Threat Analysis</h3>
-        <p>Covering the TCP/IP threat landscape, intrusion detection, VPN protocols, firewall architectures, and how to design networks that are resilient against modern attacks including man-in-the-middle and DDoS.</p>
-        <div class="crypto-topics">
-          <span class="crypto-topic">TLS/SSL</span>
-          <span class="crypto-topic">IDS/IPS</span>
-          <span class="crypto-topic">Zero Trust</span>
-          <span class="crypto-topic">VPN</span>
-          <span class="crypto-topic">Firewall</span>
-        </div>
-      </div>
-
-      <div class="crypto-card fade-in">
-        <span class="icon">🤖</span>
-        <h3>AI &amp; Deepfake Security</h3>
-        <p>Pioneering research on using deep learning (YOLO, CNN) to detect AI-generated and manipulated media. Teaching how adversarial machine learning shapes the future of digital forensics and content authentication.</p>
-        <div class="crypto-topics">
-          <span class="crypto-topic">Deepfake Detection</span>
-          <span class="crypto-topic">CNN</span>
-          <span class="crypto-topic">Adversarial ML</span>
-          <span class="crypto-topic">Digital Forensics</span>
-        </div>
-      </div>
-
-      <div class="crypto-card fade-in">
-        <span class="icon">🔏</span>
-        <h3>Hash Functions &amp; Data Integrity</h3>
-        <p>Teaching SHA-2/SHA-3 families, HMAC, Merkle trees, and their role in blockchain and secure storage. Covering collision resistance, preimage attacks, and practical implementations in Python.</p>
-        <div class="crypto-topics">
-          <span class="crypto-topic">SHA-256</span>
-          <span class="crypto-topic">HMAC</span>
-          <span class="crypto-topic">Merkle Trees</span>
-          <span class="crypto-topic">MD5 weaknesses</span>
-        </div>
-      </div>
-
-      <div class="crypto-card fade-in">
-        <span class="icon">🔐</span>
-        <h3>IoT &amp; Smart City Security</h3>
-        <p>Covering privacy-preserving architectures for IoT environments including smart cities and connected vehicles. Drawn directly from published research on video blockchain and distributed surveillance systems.</p>
-        <div class="crypto-topics">
-          <span class="crypto-topic">IoT Security</span>
-          <span class="crypto-topic">Smart City</span>
-          <span class="crypto-topic">MQTT</span>
-          <span class="crypto-topic">Edge Computing</span>
-        </div>
-      </div>
-
-    </div>
-    <div class="crypto-cta fade-in">
+<!-- ============ RESEARCH ============ -->
+<section class="band alt" id="research">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Doctoral research</p>
       <div>
-        <h3 style="font-family:var(--ff-serif);font-size:1.3rem;color:#fff;margin-bottom:0.5rem">Explore Applied Security Resources</h3>
-        <p>I use and recommend asecuritysite.com as a practical teaching companion — offering hundreds of hands-on coding exercises in cryptography, network security, and blockchain for postgraduate students.</p>
-      </div>
-      <a href="https://asecuritysite.com/" target="_blank" class="btn btn-primary">Visit asecuritysite.com ↗</a>
-    </div>
-  </div>
-</section>
-
-<!-- EDUCATION -->
-<section id="education">
-  <div class="container">
-    <p class="section-label fade-in">06 // Education</p>
-    <h2 class="fade-in">Academic Background</h2>
-    <div class="section-divider"></div>
-    <div class="edu-grid">
-      <div class="edu-card fade-in">
-        <p class="edu-degree">PhD</p>
-        <p class="edu-field">Computer Science</p>
-        <p class="edu-school">Auckland University of Technology</p>
-        <p class="edu-year">2020 – 2024 · Auckland, New Zealand</p>
-      </div>
-      <div class="edu-card fade-in">
-        <p class="edu-degree">MSc</p>
-        <p class="edu-field">Network and Information Security</p>
-        <p class="edu-school">Kingston University</p>
-        <p class="edu-year">2019 · London, United Kingdom</p>
-      </div>
-      <div class="edu-card fade-in">
-        <p class="edu-degree">UK Honour Degree Equivalent</p>
-        <p class="edu-field">Computer and Information Sciences</p>
-        <p class="edu-school">BCS Sri Lanka Region</p>
-        <p class="edu-year">2017</p>
-      </div>
-      <div class="edu-card fade-in">
-        <p class="edu-degree">Diploma</p>
-        <p class="edu-field">Information Technology</p>
-        <p class="edu-school">ESOFT Metro Campus</p>
-        <p class="edu-year">Sri Lanka</p>
+        <h2>Video blockchain: footage that proves it hasn't been changed</h2>
+        <p class="sec-intro">My PhD at Auckland University of Technology (2020–2024) developed computational methods for storing surveillance and dash-cam video so that any edit, deletion or AI-generated insertion can be detected and located. It combines cryptographic hashing, a block-matrix data structure and deep-learning detectors.</p>
       </div>
     </div>
-
-    <!-- CERTS -->
-    <h2 class="fade-in" style="margin-top:4rem;font-size:1.8rem">Certifications</h2>
-    <div class="section-divider"></div>
-    <div class="cert-grid">
-      <div class="cert-card fade-in">
-        <div class="cert-icon">🛡️</div>
-        <h4>Certified in Cybersecurity (CC)</h4>
-        <span>ISC²</span>
-      </div>
-      <div class="cert-card fade-in">
-        <div class="cert-icon">🔐</div>
-        <h4>Securing Cryptocurrencies</h4>
-        <span>Professional Certification</span>
-      </div>
-      <div class="cert-card fade-in">
-        <div class="cert-icon">⛓️</div>
-        <h4>Building an Ethereum Blockchain App</h4>
-        <span>Blockchain Development</span>
-      </div>
-      <div class="cert-card fade-in">
-        <div class="cert-icon">📐</div>
-        <h4>Designing Blockchain Solutions: Making the Case</h4>
-        <span>Solution Architecture</span>
-      </div>
-      <div class="cert-card fade-in">
-        <div class="cert-icon">🌐</div>
-        <h4>Blockchain: Beyond the Basics</h4>
-        <span>Advanced Concepts</span>
-      </div>
-      <div class="cert-card fade-in">
-        <div class="cert-icon">🔗</div>
-        <h4>Introduction to Blockchain</h4>
-        <span>Foundations</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="container">
-    <div class="contact-inner">
-      <div class="contact-info fade-in">
-        <p class="section-label">07 // Get in Touch</p>
-        <h2>Let's Connect</h2>
-        <div class="section-divider"></div>
-        <p>I'm open to cybersecurity, SOC analyst, technical support, and postdoctoral or academic roles in AI, security, or computer vision. Auckland-based — remote/hybrid anywhere in NZ considered. Full working rights.</p>
-        <div class="contact-items">
-          <a href="mailto:ktvishwajith@gmail.com" class="contact-item">
-            <div class="ci-icon">📧</div>
-            <div class="ci-text">
-              <span class="ci-label">Email</span>
-              <span class="ci-val">ktvishwajith@gmail.com</span>
-            </div>
-          </a>
-          <a href="tel:0223096296" class="contact-item">
-            <div class="ci-icon">📱</div>
-            <div class="ci-text">
-              <span class="ci-label">Phone</span>
-              <span class="ci-val">022 309 6296</span>
-            </div>
-          </a>
-          <a href="https://www.linkedin.com/in/kasun-mg" target="_blank" class="contact-item">
-            <div class="ci-icon">💼</div>
-            <div class="ci-text">
-              <span class="ci-label">LinkedIn</span>
-              <span class="ci-val">linkedin.com/in/kasun-mg</span>
-            </div>
-          </a>
-          <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&hl=en" target="_blank" class="contact-item">
-            <div class="ci-icon">🎓</div>
-            <div class="ci-text">
-              <span class="ci-label">Google Scholar</span>
-              <span class="ci-val">View Research Profile ↗</span>
-            </div>
-          </a>
+    <div class="body-grid">
+      <div></div>
+      <div class="content">
+        <div class="steps">
+          <div class="step">
+            <span class="n">Step 1</span>
+            <h3>Split each frame into blocks</h3>
+            <p>Every frame becomes a matrix of small pixel blocks, compressed and stored as binary. Small blocks let the system say <em>where</em> a change happened, not just that one did.</p>
+          </div>
+          <div class="step">
+            <span class="n">Step 2</span>
+            <h3>Hash and chain them</h3>
+            <p>Each block gets a SHA-256 fingerprint, and each frame's record includes the previous frame's hash. Altering any frame breaks every link after it.</p>
+          </div>
+          <div class="step">
+            <span class="n">Step 3</span>
+            <h3>Flag AI-generated content</h3>
+            <p>Locality-sensitive hashing (super-bit LSH) groups visually similar blocks, so the framework can recognise AI-generated and deepfake video, not only bit-level edits.</p>
+          </div>
         </div>
-      </div>
-      <div class="open-to fade-in" style="transition-delay:0.15s">
-        <h3>Currently Open To</h3>
-        <ul class="role-list">
-          <li>Cybersecurity Analyst / SOC Analyst / Information Security roles</li>
-          <li>Technical Support Analyst / IT Support roles</li>
-          <li>Postdoctoral Research roles in AI, security, or computer vision</li>
-          <li>Academic / Lecturing roles in IT or cybersecurity</li>
-          <li>Contract or consulting roles in blockchain security</li>
-        </ul>
-        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Auckland-based · Remote/hybrid considered anywhere in NZ · Full working rights</p>
-          <a href="mailto:ktvishwajith@gmail.com" class="btn btn-primary" style="width:100%;justify-content:center;">Send me an email ✉</a>
+
+        <div class="demo" id="chain-demo">
+          <div class="demo-head">
+            <span class="title"><b>Live demo</b> · tamper-evident footage · camera CAM-07</span>
+            <span class="live">runs in your browser</span>
+          </div>
+          <div class="demo-body">
+            <p class="fine">Six frames from a simulated vehicle-mounted camera are fingerprinted and chained. Pick a frame, alter it, then verify the chain. Changed blocks are outlined.</p>
+            <div class="frames" id="frames" role="group" aria-label="Choose a frame to tamper with"></div>
+            <div class="btn-row">
+              <button class="btn" id="btn-tamper" type="button">Alter frame 4</button>
+              <button class="btn primary" id="btn-verify" type="button">Verify chain</button>
+              <button class="btn" id="btn-reset" type="button">Reset footage</button>
+            </div>
+            <div class="verdict" id="verdict" aria-live="polite"><span class="mark">✓</span><span>Preparing the ledger…</span></div>
+            <div class="ledger-wrap">
+              <table class="ledger" aria-label="Video chain ledger">
+                <thead><tr><th>Block</th><th>Frame fingerprint (SHA-256)</th><th>Links to</th><th>Status</th></tr></thead>
+                <tbody id="ledger-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="results" aria-label="Detection accuracy reported in my research">
+          <div><b>0.982</b><span>accuracy · FaceForensics++</span></div>
+          <div><b>0.978</b><span>accuracy · WildDeepfake</span></div>
+          <div><b>0.973</b><span>accuracy · DeeperForensics-1.0</span></div>
+        </div>
+        <p class="fine" style="margin-top:10px">AI-generated video detection results from <a href="https://doi.org/10.24135/rangahau-aranga.v4i1.261" target="_blank" rel="noopener">Blockchain-powered authentication (2025)</a>. Full thesis: <a href="http://hdl.handle.net/10292/18151" target="_blank" rel="noopener">Computational methods for video blockchain in intelligent surveillance</a>.</p>
+
+        <div class="gallery">
+          <figure>
+            <img src="presenting-poster.jpg" alt="Kasun pointing to the methods section of his research poster on blockchain-powered authentication" loading="lazy" width="1400" height="933">
+            <figcaption>Explaining the block-matrix method at an AUT research showcase.</figcaption>
+          </figure>
+          <figure>
+            <img src="presenting-audience.jpg" alt="Kasun answering questions from students at the AUT event" loading="lazy" width="1400" height="933">
+            <figcaption>Taking questions from researchers and students. Supervisors: Wei Qi Yan, Minh Nguyen.</figcaption>
+          </figure>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- ============ POSE ============ -->
+<section class="band" id="pose">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Applied computer vision</p>
+      <div>
+        <h2>Posture analysis from one ordinary camera</h2>
+        <p class="sec-intro">With Mahesh Babu Purushothaman at AUT, I built a smart vision-based method that tracks 33 body landmarks and flags manual-lifting postures linked to musculoskeletal injury in construction work. This demo uses the same landmark model (BlazePose, via MediaPipe) to measure joint angles.</p>
+      </div>
+    </div>
+    <div class="body-grid">
+      <div></div>
+      <div class="content">
+        <div class="demo">
+          <div class="demo-head">
+            <span class="title"><b>Live demo</b> · joint-angle estimation · 33 landmarks</span>
+            <span class="live">runs on your device</span>
+          </div>
+          <div class="demo-body">
+            <div class="pose-grid">
+              <div class="stage" id="stage">
+                <img id="pose-img" src="presenting-poster.jpg" alt="Photo being analysed" width="1400" height="933">
+                <video id="pose-video" playsinline muted hidden></video>
+                <canvas id="pose-canvas" aria-hidden="true"></canvas>
+                <p class="status" id="pose-status">Sample photo loaded. Press “Analyse photo” to detect the skeleton.</p>
+              </div>
+              <div class="readout">
+                <div class="btn-row">
+                  <button class="btn primary" id="btn-analyse" type="button">Analyse photo</button>
+                  <label class="btn file-label" for="pose-file">Upload a photo<input id="pose-file" type="file" accept="image/*"></label>
+                  <button class="btn" id="btn-camera" type="button">Use camera</button>
+                </div>
+                <table class="angles" aria-label="Measured joint angles">
+                  <tbody>
+                    <tr><td>Trunk lean from vertical</td><td id="a-trunk">—</td></tr>
+                    <tr><td>Left knee</td><td id="a-lknee">—</td></tr>
+                    <tr><td>Right knee</td><td id="a-rknee">—</td></tr>
+                    <tr><td>Left hip</td><td id="a-lhip">—</td></tr>
+                    <tr><td>Right hip</td><td id="a-rhip">—</td></tr>
+                    <tr><td>Left elbow</td><td id="a-lelbow">—</td></tr>
+                    <tr><td>Right elbow</td><td id="a-relbow">—</td></tr>
+                    <tr><td>Left shoulder (arm raise)</td><td id="a-lsh">—</td></tr>
+                    <tr><td>Right shoulder (arm raise)</td><td id="a-rsh">—</td></tr>
+                  </tbody>
+                </table>
+                <div class="assess" id="assess"><b>Lifting check:</b> run the model to see whether the back or knees would put strain on a lift.</div>
+              </div>
+            </div>
+            <p class="fine">Photos and camera frames are processed on your device and never uploaded. Thresholds are illustrative: trunk lean over 45° with straight knees is treated as a stoop lift.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section class="band alt" id="projects">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Current projects</p>
+      <div>
+        <h2>Apps I'm building</h2>
+        <p class="sec-intro">Mobile apps that take my research and IT experience into everyday products. Each one is designed privacy-first, with processing on the device wherever possible.</p>
+      </div>
+    </div>
+    <div class="body-grid">
+      <div></div>
+      <div class="content projects">
+
+        <article class="project featured">
+          <div class="p-top"><span class="p-kicker">Flagship · fitness &amp; injury prevention</span><span class="status-chip building">In development</span></div>
+          <h3>PoseCheck</h3>
+          <p>A gym-form coach that watches an exercise through the phone camera and gives feedback on joint angles and posture in real time. It applies the posture-error method from my published construction-safety research to strength training.</p>
+          <ul class="tags"><li>BlazePose</li><li>MediaPipe</li><li>OpenCV</li><li>JavaScript</li><li>Android → iOS</li></ul>
+          <div class="p-side lineage">
+            <div class="row"><span>Research</span><span>33-landmark posture-error detection for manual lifting (SASBE journal)</span></div>
+            <div class="row"><span>Prototype</span><span>Browser version: the pose demo above</span></div>
+            <div class="row"><span>Next</span><span>Native Android app, then iOS</span></div>
+            <a class="btn" href="#pose" style="justify-self:start">Try the prototype</a>
+          </div>
+        </article>
+
+        <article class="project">
+          <div class="p-top"><span class="p-kicker">Personal finance · New Zealand</span><span class="status-chip building">In development</span></div>
+          <h3>BudgetBuddy</h3>
+          <p>Photograph a grocery receipt and the app turns it into spending data, then learns your prices to show which store is cheapest for your list and when you'll need to restock.</p>
+          <ul class="p-list"><li>On-device OCR with per-store receipt templates</li><li>Works offline first, syncs later</li><li>Spend dashboard and smart shopping list</li></ul>
+          <ul class="tags"><li>React Native</li><li>Expo</li><li>ML Kit OCR</li><li>Google Sign-In</li></ul>
+        </article>
+
+        <article class="project">
+          <div class="p-top"><span class="p-kicker">Wellbeing · older adults</span><span class="status-chip building">In development</span></div>
+          <h3>AI Companion</h3>
+          <p>A conversational companion for older and isolated people that remembers context, sets medication reminders and encourages contact with family. Safety comes first: crisis detection runs in the backend, never left to the AI alone.</p>
+          <ul class="p-list"><li>Emergency-contact button always on screen</li><li>Reminders run natively, even offline</li><li>Encrypted chat data, NZ Privacy Act 2020 aligned</li></ul>
+          <ul class="tags"><li>React Native</li><li>Node.js</li><li>PostgreSQL</li><li>Llama 3.1</li></ul>
+        </article>
+
+        <article class="project">
+          <div class="p-top"><span class="p-kicker">Health · accessibility</span><span class="status-chip">Concept</span></div>
+          <h3>Home Health Tracker</h3>
+          <p>A simple tracker for older users to log everyday health readings and get plain-language insights. Large type, high contrast and text-to-speech make it usable without help.</p>
+          <ul class="tags"><li>Accessibility-first UI</li><li>Text-to-speech</li><li>AI insights</li></ul>
+        </article>
+
+        <article class="project">
+          <div class="p-top"><span class="p-kicker">Fashion · computer vision</span><span class="status-chip">Concept</span></div>
+          <h3>Digital Closet</h3>
+          <p>Scan the clothes you own once, and an AI stylist suggests outfits from your own wardrobe for the weather, the occasion and what you wore recently.</p>
+          <ul class="tags"><li>Image classification</li><li>Garment segmentation</li><li>Recommendation</li></ul>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PUBLICATIONS ============ -->
+<section class="band" id="publications">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Publications</p>
+      <div>
+        <h2>Peer-reviewed work</h2>
+        <p class="sec-intro">Seven publications on video authentication, blockchain-based privacy and computer vision for safety. <a href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&amp;hl=en" target="_blank" rel="noopener">Full list on Google Scholar ↗</a></p>
+      </div>
+    </div>
+    <div class="body-grid">
+      <div></div>
+      <div class="content pubs">
+        <div class="pub"><span class="yr">2025</span><div><span class="kind">Journal article</span><p class="t">Blockchain-powered authentication: Reinforcing identification for misinformation in AI-generated videos</p><p class="m">Moolikagedara, K. · <em>Rangahau Aranga: AUT Graduate Review</em>, 4(1)</p><a href="https://doi.org/10.24135/rangahau-aranga.v4i1.261" target="_blank" rel="noopener">doi.org/10.24135/rangahau-aranga.v4i1.261</a></div></div>
+        <div class="pub"><span class="yr">2024</span><div><span class="kind">PhD thesis</span><p class="t">Computational methods for video blockchain in intelligent surveillance</p><p class="m">Moolikagedara, K. · Auckland University of Technology</p><a href="http://hdl.handle.net/10292/18151" target="_blank" rel="noopener">hdl.handle.net/10292/18151</a></div></div>
+        <div class="pub"><span class="yr">2024</span><div><span class="kind">Journal article</span><p class="t">Advancing video data privacy preservation in IoT networks through video blockchain</p><p class="m">Moolikagedara, K., Nguyen, M., Yan, W.Q., &amp; Li, X.J. · <em>Information</em>, 15(3), 171</p><a href="https://doi.org/10.3390/info15030171" target="_blank" rel="noopener">doi.org/10.3390/info15030171</a></div></div>
+        <div class="pub"><span class="yr">2023</span><div><span class="kind">Journal article</span><p class="t">Video blockchain: A decentralised approach for secure and sustainable networks with distributed video footage from vehicle-mounted cameras in smart cities</p><p class="m">Moolikagedara, K., Nguyen, M., Yan, W.Q., &amp; Li, X.J. · <em>Electronics</em>, 12(17), 3621</p><a href="https://doi.org/10.3390/electronics12173621" target="_blank" rel="noopener">doi.org/10.3390/electronics12173621</a></div></div>
+        <div class="pub"><span class="yr">2023</span><div><span class="kind">Journal article</span><p class="t">Smart vision-based analysis and error deduction of human pose to reduce musculoskeletal disorders in construction</p><p class="m">Purushothaman, M.B., &amp; Moolikagedara, K. · <em>Smart and Sustainable Built Environment</em></p><a href="https://doi.org/10.1108/SASBE-02-2023-0037" target="_blank" rel="noopener">doi.org/10.1108/SASBE-02-2023-0037</a></div></div>
+        <div class="pub"><span class="yr">2023</span><div><span class="kind">Conference paper</span><p class="t">Enhancing privacy protection in intelligent surveillance: Video blockchain solutions</p><p class="m">Moolikagedara, K., Nguyen, M., &amp; Yan, W.Q. · BLOCKCHAIN 2023, Springer LNNS vol. 778, pp. 42–51</p><a href="https://doi.org/10.1007/978-3-031-45155-3_5" target="_blank" rel="noopener">doi.org/10.1007/978-3-031-45155-3_5</a></div></div>
+        <div class="pub"><span class="yr">2022</span><div><span class="kind">Book chapter</span><p class="t">Visual blockchain for intelligent surveillance in a smart city</p><p class="m">Moolikagedara, K., Nguyen, M., &amp; Yan, W.Q. · <em>Blockchain Technologies for Sustainable Development in Smart Cities</em>, IGI Global, pp. 1–13</p><a href="https://doi.org/10.4018/978-1-7998-9274-8.ch01" target="_blank" rel="noopener">doi.org/10.4018/978-1-7998-9274-8.ch01</a></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXPERIENCE ============ -->
+<section class="band alt" id="experience">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Experience</p>
+      <div><h2>Industry, research and teaching</h2></div>
+    </div>
+    <div class="body-grid">
+      <div></div>
+      <div class="content timeline">
+        <div class="job"><span class="when">2025 – now</span><div><h3>Team Leader, Repair &amp; Restore</h3><p class="org">Verifone · Auckland</p><ul><li>Lead repair and restore work on secure payment terminals, with L1/L2 technical support</li><li>Manage incidents through ServiceNow across 500+ devices a month, with no major security incidents</li></ul></div></div>
+        <div class="job"><span class="when">2020 – 2024</span><div><h3>PhD Researcher, AI Security &amp; Computer Vision</h3><p class="org">Auckland University of Technology</p><ul><li>Built video blockchain frameworks protecting the integrity and privacy of smart-city surveillance footage</li><li>Designed AI-driven authentication to detect manipulated and AI-generated video</li><li>Built Python and OpenCV pipelines with YOLO and CNN models for large-scale video analysis</li></ul></div></div>
+        <div class="job"><span class="when">2022 – 2023</span><div><h3>Research Assistant, Computer Vision for Health &amp; Safety</h3><p class="org">Auckland University of Technology</p><ul><li>Applied pose estimation and ML to detect musculoskeletal injury risk in real time</li><li>Developed in Python, JavaScript and OpenCV; reported findings to industry stakeholders</li></ul></div></div>
+        <div class="job"><span class="when">2019 – 2022</span><div><h3>Programme Leader &amp; Lecturer, IT</h3><p class="org">Saegis Campus, Sri Lanka · delivered remotely from NZ</p><ul><li>Led IT certificate, diploma and BTEC Level 5 HND programmes: curriculum, assessment and quality assurance</li><li>Built and mentored the teaching team; launched new accredited programmes</li><li>Teaching areas: cryptography, network security, blockchain, IoT security</li></ul></div></div>
+        <div class="job"><span class="when">2016 – 2020</span><div><h3>IT Support Specialist, Infrastructure &amp; Security</h3><p class="org">Analytical Instruments (Pvt) Ltd · Colombo</p><ul><li>Administered Windows Server, Active Directory and Kaspersky endpoint security</li><li>Resolved 1,000+ L1/L2 tickets at 95% satisfaction; kept 99.9% network uptime</li></ul></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CREDENTIALS ============ -->
+<section class="band" id="credentials">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Credentials</p>
+      <div>
+        <h2>Education, certifications and current learning</h2>
+        <p class="sec-intro">Updated as courses are completed.</p>
+      </div>
+    </div>
+    <div class="body-grid">
+      <div></div>
+      <div class="content cred-grid">
+        <div class="cred-col">
+          <h3>Education</h3>
+          <ul class="cred-list">
+            <li><span class="what">PhD, Computer Science</span><span class="who">Auckland University of Technology · 2024</span></li>
+            <li><span class="what">MSc, Network &amp; Information Security</span><span class="who">Kingston University, London · 2019</span></li>
+            <li><span class="what">BCS Professional Graduate Diploma (UK Honours equivalent)</span><span class="who">BCS Sri Lanka · 2017</span></li>
+            <li><span class="what">Diploma, Information Technology</span><span class="who">ESOFT Metro Campus</span></li>
+          </ul>
+        </div>
+        <div class="cred-col">
+          <h3>Certified</h3>
+          <ul class="cred-list">
+            <li><span class="state">Certified</span><span class="what">Certified in Cybersecurity (CC)</span><span class="who">ISC2</span></li>
+            <li><span class="state">Certified</span><span class="what">ITIL 4 Foundation</span><span class="who">PeopleCert / AXELOS</span></li>
+            <li><span class="state">Certified</span><span class="what">Securing Cryptocurrencies</span><span class="who">Professional certificate</span></li>
+            <li><span class="state">Certified</span><span class="what">Blockchain series: Introduction, Beyond the Basics, Designing Solutions, Building an Ethereum App</span><span class="who">Four courses</span></li>
+          </ul>
+        </div>
+        <div class="cred-col">
+          <h3>In progress</h3>
+          <!-- When one finishes: change "In progress" to "Certified" and move the <li> into the Certified list. -->
+          <ul class="cred-list">
+            <li><span class="state prog">In progress</span><span class="what">CompTIA Security+</span><span class="who">CompTIA</span></li>
+            <li><span class="state prog">In progress</span><span class="what">Claude and AI fluency courses</span><span class="who">Anthropic Academy</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="band alt" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="sec-label">Contact</p>
+      <div><h2>Let's talk</h2><p class="sec-intro">Auckland-based with full working rights. Open to hybrid or remote roles anywhere in New Zealand.</p></div>
+    </div>
+    <div class="body-grid">
+      <div></div>
+      <div class="content contact-grid">
+        <div class="contact-lines">
+          <div class="cline"><span class="k">Email</span><a class="v" href="mailto:ktvishwajith@gmail.com" id="email-val">ktvishwajith@gmail.com</a><button class="copy" type="button" data-copy="ktvishwajith@gmail.com">Copy</button></div>
+          <div class="cline"><span class="k">Phone</span><a class="v" href="tel:+64223096296">022 309 6296</a><button class="copy" type="button" data-copy="022 309 6296">Copy</button></div>
+          <div class="cline"><span class="k">LinkedIn</span><a class="v" href="https://www.linkedin.com/in/kasun-mg" target="_blank" rel="noopener">linkedin.com/in/kasun-mg</a><span></span></div>
+          <div class="cline"><span class="k">Scholar</span><a class="v" href="https://scholar.google.com/citations?user=w_nMxr8AAAAJ&amp;hl=en" target="_blank" rel="noopener">Research profile ↗</a><span></span></div>
+          <div class="cline" data-github hidden><span class="k">GitHub</span><a class="v" data-github-link href="#" target="_blank" rel="noopener">GitHub</a><span></span></div>
+        </div>
+        <div class="open-to">
+          <h3>Open to</h3>
+          <ul>
+            <li>Cybersecurity, SOC analyst and information security roles</li>
+            <li>Postdoctoral research in AI, security or computer vision</li>
+            <li>Lecturing in IT or cybersecurity</li>
+            <li>Technical support and IT leadership roles</li>
+            <li>Consulting on video authentication and blockchain security</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
 
 <footer>
-  <p>Kasun Moolikagedara &nbsp;·&nbsp; PhD Computer Science, AUT &nbsp;·&nbsp; Auckland, New Zealand &nbsp;·&nbsp; ktvishwajith@gmail.com</p>
+  <div class="wrap">
+    <span>© 2026 Kasun Moolikagedara · Auckland, New Zealand</span>
+    <span class="mono">Plain HTML, no tracking</span>
+  </div>
 </footer>
 
 <script>
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-</script>
+/* ---------- Settings: put your GitHub username here ---------- */
+const GITHUB_USERNAME = "KTVshwajith";
 
+(function () {
+  if (!GITHUB_USERNAME) return;
+  const url = "https://github.com/" + GITHUB_USERNAME;
+  document.querySelectorAll("[data-github]").forEach(el => {
+    el.hidden = false;
+    if (el.tagName === "A") el.href = url;
+  });
+  document.querySelectorAll("[data-github-link]").forEach(a => { a.href = url; a.textContent = "github.com/" + GITHUB_USERNAME; });
+})();
+
+/* ---------- Copy buttons ---------- */
+document.querySelectorAll(".copy").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const text = btn.dataset.copy;
+    const done = () => { btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Copy"), 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => selectSibling(btn));
+    } else selectSibling(btn);
+  });
+});
+function selectSibling(btn) {
+  const v = btn.parentElement.querySelector(".v");
+  const r = document.createRange(); r.selectNodeContents(v);
+  const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  btn.textContent = "Selected";
+}
+
+/* ---------- Helpers ---------- */
+const hex = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+async function sha256(data) {
+  const bytes = typeof data === "string" ? new TextEncoder().encode(data) : data;
+  return hex(await crypto.subtle.digest("SHA-256", bytes));
+}
+
+/* ---------- Photo fingerprint ---------- */
+(async function () {
+  const out = document.getElementById("photo-hash");
+  try {
+    const img = document.querySelector(".portrait img");
+    const res = await fetch(img.currentSrc || img.src);
+    const h = await sha256(await res.arrayBuffer());
+    out.textContent = h.slice(0, 16) + "…" + h.slice(-8);
+  } catch (e) { out.textContent = "unavailable here"; }
+})();
+
+/* ---------- Video chain demo ---------- */
+(function () {
+  const N = 6, W = 160, H = 90, COLS = 8, ROWS = 5;
+  const BW = W / COLS, BH = H / ROWS;
+  const framesEl = document.getElementById("frames");
+  const ledgerBody = document.getElementById("ledger-body");
+  const verdict = document.getElementById("verdict");
+  const btnTamper = document.getElementById("btn-tamper");
+  let selected = 3;            // zero-based, frame 4
+  let ledger = [];             // what was recorded at capture time
+  const canvases = [], buttons = [];
+  const tampered = new Set();
+
+  function drawFrame(ctx, i) {
+    // sky
+    const sky = ctx.createLinearGradient(0, 0, 0, 50);
+    sky.addColorStop(0, "#8fb8c9"); sky.addColorStop(1, "#cfe0e4");
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, 50);
+    // buildings
+    ctx.fillStyle = "#5d6f74";
+    [[6, 22, 18], [28, 14, 14], [46, 28, 22], [74, 18, 16], [96, 10, 20], [120, 24, 16], [140, 16, 18]]
+      .forEach(([x, top, w]) => ctx.fillRect(x - i * 2, top, w, 50 - top));
+    // road
+    ctx.fillStyle = "#3b4244"; ctx.fillRect(0, 50, W, 40);
+    ctx.fillStyle = "#e9e3c8";
+    for (let x = -20; x < W + 20; x += 26) ctx.fillRect(x - (i * 9) % 26, 68, 13, 2);
+    // car ahead
+    const cx = 70 + i * 4;
+    ctx.fillStyle = "#b5532a"; ctx.fillRect(cx, 56, 26, 9);
+    ctx.fillStyle = "#1d2526"; ctx.fillRect(cx + 3, 64, 5, 3); ctx.fillRect(cx + 18, 64, 5, 3);
+    // timestamp overlay
+    ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, 92, 10);
+    ctx.fillStyle = "#ffffff"; ctx.font = "7px monospace";
+    ctx.fillText("CAM-07 08:31:0" + i + ".00", 3, 7);
+  }
+
+  function blockData(ctx, c, r) {
+    return ctx.getImageData(c * BW, r * BH, BW, BH).data;
+  }
+  async function frameRecord(i, prev) {
+    const ctx = canvases[i].getContext("2d", { willReadFrequently: true });
+    const blocks = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) blocks.push(await sha256(blockData(ctx, c, r)));
+    const hash = await sha256(blocks.join("") + prev + i);
+    return { blocks, hash, prev };
+  }
+
+  function paintAll() {
+    for (let i = 0; i < N; i++) {
+      const ctx = canvases[i].getContext("2d", { willReadFrequently: true });
+      ctx.clearRect(0, 0, W, H); drawFrame(ctx, i);
+    }
+  }
+
+  function build() {
+    for (let i = 0; i < N; i++) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "frame-btn";
+      b.setAttribute("aria-pressed", String(i === selected));
+      b.setAttribute("aria-label", "Frame " + (i + 1));
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      const lab = document.createElement("span"); lab.textContent = "frame " + String(i + 1).padStart(2, "0");
+      b.append(cv, lab);
+      b.addEventListener("click", () => {
+        selected = i;
+        buttons.forEach((x, k) => x.setAttribute("aria-pressed", String(k === i)));
+        btnTamper.textContent = "Alter frame " + (i + 1);
+      });
+      framesEl.append(b); canvases.push(cv); buttons.push(b);
+    }
+  }
+
+  async function record() {
+    ledger = []; let prev = "0".repeat(64);
+    for (let i = 0; i < N; i++) { const rec = await frameRecord(i, prev); ledger.push(rec); prev = rec.hash; }
+  }
+
+  function short(h) { return h.slice(0, 10) + "…"; }
+
+  function renderLedger(statuses) {
+    ledgerBody.innerHTML = "";
+    ledger.forEach((rec, i) => {
+      const tr = document.createElement("tr");
+      const st = statuses ? statuses[i] : { cls: "ok", text: "Verified" };
+      tr.innerHTML =
+        "<td class='mono'>#" + String(i + 1).padStart(2, "0") + "</td>" +
+        "<td class='mono'>" + short(rec.hash) + "</td>" +
+        "<td class='mono'>" + (i === 0 ? "genesis" : short(rec.prev)) + "</td>" +
+        "<td><span class='chip " + st.cls + "'>" + st.text + "</span></td>";
+      ledgerBody.append(tr);
+    });
+  }
+
+  function outline(i, changed) {
+    const ctx = canvases[i].getContext("2d");
+    const color = getComputedStyle(document.documentElement).getPropertyValue("--signal").trim() || "#b8460d";
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    changed.forEach(k => {
+      const c = k % COLS, r = Math.floor(k / COLS);
+      ctx.strokeRect(c * BW + 1, r * BH + 1, BW - 2, BH - 2);
+    });
+  }
+
+  async function verify() {
+    const statuses = []; let firstBad = -1; let changedCount = 0;
+    paintAllWithTamper();
+    let prevRecorded = "0".repeat(64);
+    for (let i = 0; i < N; i++) {
+      const now = await frameRecord(i, prevRecorded);
+      const changed = now.blocks.map((h, k) => (h !== ledger[i].blocks[k] ? k : -1)).filter(k => k >= 0);
+      if (changed.length) {
+        statuses.push({ cls: "bad", text: "Altered · " + changed.length + " block" + (changed.length > 1 ? "s" : "") });
+        if (firstBad < 0) firstBad = i; changedCount += changed.length; outline(i, changed);
+      } else if (firstBad >= 0) {
+        statuses.push({ cls: "warn", text: "Link broken upstream" });
+      } else statuses.push({ cls: "ok", text: "Verified" });
+      prevRecorded = ledger[i].hash;
+    }
+    renderLedger(statuses);
+    if (firstBad < 0) {
+      verdict.className = "verdict";
+      verdict.innerHTML = "<span class='mark'>✓</span><span>All " + N + " frames match the ledger. The footage is intact.</span>";
+    } else {
+      verdict.className = "verdict bad";
+      verdict.innerHTML = "<span class='mark'>✗</span><span>Tampering detected in frame " + (firstBad + 1) + ": " + changedCount +
+        " of " + COLS * ROWS + " blocks changed (outlined). Frames after it can no longer be trusted because their links point to the original fingerprint.</span>";
+    }
+  }
+
+  function tamperDraw(ctx, i) {
+    // paste a "person" that was never there
+    ctx.fillStyle = "#e8c547"; ctx.beginPath(); ctx.arc(34 + i, 54, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#2c6e8f"; ctx.fillRect(31 + i, 57, 6, 11);
+    ctx.fillStyle = "#1d2526"; ctx.fillRect(31 + i, 68, 2, 6); ctx.fillRect(35 + i, 68, 2, 6);
+  }
+  function paintAllWithTamper() {
+    paintAll();
+    tampered.forEach(i => tamperDraw(canvases[i].getContext("2d"), i));
+  }
+
+  btnTamper.addEventListener("click", () => {
+    tampered.add(selected);
+    paintAllWithTamper();
+    verdict.className = "verdict";
+    verdict.innerHTML = "<span class='mark'>…</span><span>Frame " + (selected + 1) + " now shows a pedestrian who was never there. Press “Verify chain”.</span>";
+  });
+  document.getElementById("btn-verify").addEventListener("click", verify);
+  document.getElementById("btn-reset").addEventListener("click", async () => {
+    tampered.clear(); paintAll(); await verify();
+  });
+
+  build(); paintAll();
+  if (!(window.crypto && crypto.subtle)) {
+    verdict.className = "verdict bad";
+    verdict.innerHTML = "<span class='mark'>!</span><span>This browser blocks the cryptography API on this page. Open the site over https to run the demo.</span>";
+    return;
+  }
+  record().then(verify);
+})();
+
+/* ---------- Pose demo ---------- */
+(function () {
+  const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+  const MODEL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+  const img = document.getElementById("pose-img");
+  const video = document.getElementById("pose-video");
+  const canvas = document.getElementById("pose-canvas");
+  const status = document.getElementById("pose-status");
+  const assess = document.getElementById("assess");
+  const btnAnalyse = document.getElementById("btn-analyse");
+  const btnCamera = document.getElementById("btn-camera");
+  const fileInput = document.getElementById("pose-file");
+  let landmarker = null, vision = null, mode = "IMAGE", stream = null, raf = 0, lastT = -1;
+
+  const CONNECTIONS = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28],[27,29],[29,31],[27,31],[28,30],[30,32],[28,32],[15,17],[15,19],[16,18],[16,20],[0,11],[0,12]];
+
+  function setStatus(t) { status.textContent = t; status.hidden = !t; }
+
+  async function load() {
+    if (landmarker) return landmarker;
+    setStatus("Loading the pose model (about 6 MB, first time only)…");
+    vision = await import(CDN + "/vision_bundle.mjs");
+    const files = await vision.FilesetResolver.forVisionTasks(CDN + "/wasm");
+    const opts = d => ({ baseOptions: { modelAssetPath: MODEL, delegate: d }, runningMode: "IMAGE", numPoses: 1 });
+    try { landmarker = await vision.PoseLandmarker.createFromOptions(files, opts("GPU")); }
+    catch (e) { landmarker = await vision.PoseLandmarker.createFromOptions(files, opts("CPU")); }
+    mode = "IMAGE";
+    return landmarker;
+  }
+  async function setMode(m) { if (mode !== m) { await landmarker.setOptions({ runningMode: m }); mode = m; } }
+
+  function angle(a, b, c) {
+    const ab = [a.x - b.x, a.y - b.y], cb = [c.x - b.x, c.y - b.y];
+    const dot = ab[0] * cb[0] + ab[1] * cb[1];
+    const m = Math.hypot(...ab) * Math.hypot(...cb);
+    return m ? Math.acos(Math.max(-1, Math.min(1, dot / m))) * 180 / Math.PI : NaN;
+  }
+
+  // Map normalised landmarks to the displayed box (object-fit: contain)
+  function fitBox(srcW, srcH) {
+    const box = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(box.width * dpr); canvas.height = Math.round(box.height * dpr);
+    const s = Math.min(canvas.width / srcW, canvas.height / srcH);
+    return { s, ox: (canvas.width - srcW * s) / 2, oy: (canvas.height - srcH * s) / 2, w: srcW, h: srcH, dpr };
+  }
+
+  function draw(lm, fit) {
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!lm) return;
+    const css = getComputedStyle(document.documentElement);
+    const acc = css.getPropertyValue("--accent").trim() || "#0a6670";
+    const P = p => [fit.ox + p.x * fit.w * fit.s, fit.oy + p.y * fit.h * fit.s];
+    ctx.lineWidth = 3 * fit.dpr; ctx.strokeStyle = acc; ctx.lineCap = "round";
+    CONNECTIONS.forEach(([a, b]) => {
+      if ((lm[a].visibility ?? 1) < 0.4 || (lm[b].visibility ?? 1) < 0.4) return;
+      const [x1, y1] = P(lm[a]), [x2, y2] = P(lm[b]);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    });
+    lm.forEach((p, i) => {
+      if (i < 11 && i !== 0) return;
+      if ((p.visibility ?? 1) < 0.4) return;
+      const [x, y] = P(p);
+      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, 4.5 * fit.dpr, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(x, y, 3 * fit.dpr, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
+  function readout(lm, srcW, srcH) {
+    const put = (id, v) => (document.getElementById(id).textContent = isNaN(v) ? "—" : Math.round(v) + "°");
+    if (!lm) {
+      ["a-trunk","a-lknee","a-rknee","a-lhip","a-rhip","a-lelbow","a-relbow","a-lsh","a-rsh"].forEach(id => put(id, NaN));
+      assess.className = "assess"; assess.innerHTML = "<b>Lifting check:</b> no person found. Try a photo with the whole body in view.";
+      return;
+    }
+    // use pixel space so angles aren't distorted by aspect ratio
+    const p = lm.map(q => ({ x: q.x * srcW, y: q.y * srcH, v: q.visibility ?? 1 }));
+    const ok = (...ix) => ix.every(i => p[i].v >= 0.5);
+    const A = (a, b, c) => (ok(a, b, c) ? angle(p[a], p[b], p[c]) : NaN);
+    const lk = A(23, 25, 27), rk = A(24, 26, 28), lh = A(11, 23, 25), rh = A(12, 24, 26);
+    put("a-lknee", lk); put("a-rknee", rk); put("a-lhip", lh); put("a-rhip", rh);
+    put("a-lelbow", A(11, 13, 15)); put("a-relbow", A(12, 14, 16));
+    put("a-lsh", A(13, 11, 23)); put("a-rsh", A(14, 12, 24));
+    let trunk = NaN;
+    if (ok(11, 12, 23, 24)) {
+      const sh = { x: (p[11].x + p[12].x) / 2, y: (p[11].y + p[12].y) / 2 };
+      const hp = { x: (p[23].x + p[24].x) / 2, y: (p[23].y + p[24].y) / 2 };
+      trunk = Math.abs(Math.atan2(sh.x - hp.x, hp.y - sh.y)) * 180 / Math.PI;
+    }
+    put("a-trunk", trunk);
+    const knees = [lk, rk].filter(v => !isNaN(v));
+    const knee = knees.length ? Math.max(...knees) : NaN;
+    if (isNaN(trunk)) {
+      assess.className = "assess"; assess.innerHTML = "<b>Lifting check:</b> shoulders and hips need to be visible to judge back posture.";
+    } else if (trunk > 45 && (isNaN(knee) || knee > 150)) {
+      assess.className = "assess bad"; assess.innerHTML = "<b>Stoop lift:</b> the back is leaning " + Math.round(trunk) + "° with straight knees. Bend the knees and keep the back upright to reduce strain.";
+    } else if (trunk > 20) {
+      assess.className = "assess bad"; assess.innerHTML = "<b>Moderate lean:</b> trunk at " + Math.round(trunk) + "°. Acceptable briefly, but avoid holding or lifting load in this position.";
+    } else {
+      assess.className = "assess ok"; assess.innerHTML = "<b>Neutral back:</b> trunk within 20° of vertical. A safe starting posture for a lift.";
+    }
+  }
+
+  async function analyseImage() {
+    stopCamera();
+    btnAnalyse.disabled = true;
+    try {
+      await load(); await setMode("IMAGE");
+      if (!img.complete) await new Promise(r => (img.onload = r));
+      setStatus("Detecting…");
+      const res = landmarker.detect(img);
+      const lm = res.landmarks && res.landmarks[0];
+      canvas.classList.remove("mirror");
+      draw(lm, fitBox(img.naturalWidth, img.naturalHeight));
+      readout(lm, img.naturalWidth, img.naturalHeight);
+      setStatus(lm ? "" : "No person detected in this photo.");
+    } catch (e) {
+      console.error(e);
+      setStatus("The pose model couldn't load here. It needs internet access to cdn.jsdelivr.net and storage.googleapis.com.");
+    } finally { btnAnalyse.disabled = false; }
+  }
+
+  fileInput.addEventListener("change", () => {
+    const f = fileInput.files && fileInput.files[0];
+    if (!f) return;
+    stopCamera();
+    const url = URL.createObjectURL(f);
+    img.onload = () => { analyseImage(); };
+    img.src = url; img.alt = "Your uploaded photo";
+    const ctx = canvas.getContext("2d"); ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+
+  btnAnalyse.addEventListener("click", analyseImage);
+
+  function stopCamera() {
+    if (raf) cancelAnimationFrame(raf); raf = 0;
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.hidden = true; img.hidden = false; btnCamera.textContent = "Use camera";
+  }
+
+  btnCamera.addEventListener("click", async () => {
+    if (stream) { stopCamera(); setStatus(""); return; }
+    try {
+      setStatus("Asking for camera access…");
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 960, height: 640 }, audio: false });
+    } catch (e) {
+      stream = null;
+      setStatus("Camera access was blocked. Allow the camera in your browser, or upload a photo instead.");
+      return;
+    }
+    video.srcObject = stream; await video.play();
+    img.hidden = true; video.hidden = false; btnCamera.textContent = "Stop camera";
+    try { await load(); await setMode("VIDEO"); }
+    catch (e) { setStatus("The pose model couldn't load here. It needs internet access to cdn.jsdelivr.net and storage.googleapis.com."); return; }
+    setStatus("");
+    canvas.classList.add("mirror");
+    const loop = () => {
+      if (!stream) return;
+      if (video.currentTime !== lastT && video.videoWidth) {
+        lastT = video.currentTime;
+        const res = landmarker.detectForVideo(video, performance.now());
+        const lm = res.landmarks && res.landmarks[0];
+        draw(lm, fitBox(video.videoWidth, video.videoHeight));
+        readout(lm, video.videoWidth, video.videoHeight);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    loop();
+  });
+
+  window.addEventListener("resize", () => { const c = canvas.getContext("2d"); c.clearRect(0, 0, canvas.width, canvas.height); });
+})();
+</script>
 </body>
 </html>

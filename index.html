@@ -142,8 +142,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .frame-btn[aria-pressed="true"] { border-color: var(--accent); }
 .frame-btn canvas { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 5px; display: block; background: var(--sunk); }
 .frame-btn span { font-family: var(--ff-mono); font-size: 0.7rem; color: var(--muted); text-align: center; }
+.chain-opts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.opt { display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--muted); }
+.opt select { min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
 .ledger-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
-table.ledger { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 560px; }
+table.ledger { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 680px; }
 .ledger th, .ledger td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .ledger th { font-weight: 600; color: var(--muted); font-size: 0.8rem; background: var(--sunk); }
 .ledger tr:last-child td { border-bottom: 0; }
@@ -174,7 +177,6 @@ table.ledger { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-wi
 .pose-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 .stage { position: relative; border-radius: 10px; overflow: hidden; background: var(--sunk); aspect-ratio: 3 / 2; }
 .stage img, .stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.stage video { transform: scaleX(-1); }
 .stage canvas.mirror { transform: scaleX(-1); }
 .stage .status { position: absolute; left: 10px; bottom: 10px; right: 10px; font-family: var(--ff-mono); font-size: 0.74rem; background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink); padding: 6px 10px; border-radius: 6px; }
 .readout { display: grid; gap: 14px; }
@@ -313,10 +315,10 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 <section class="hero">
   <div class="wrap">
     <div>
-      <p class="eyebrow">PhD · Trustworthy AI · Cybersecurity · Auckland, NZ</p>
+      <p class="eyebrow">Dr · PhD, AUT · Auckland, New Zealand</p>
       <h1>Kasun Moolikagedara</h1>
-      <p class="role">Researcher in video authentication and computer vision. IT professional who keeps systems running.</p>
-      <p class="lede">I build tools that check whether video is genuine, measure how people move from a single camera, and keep secure systems working day to day. Both demos below run in your browser.</p>
+      <p class="role">Cybersecurity &amp; AI lecturer and researcher, bridging research and industry practice.</p>
+      <p class="lede">I teach and research at the intersection of AI, cybersecurity and blockchain, and I bring live security-operations experience into the classroom: I currently support 500+ secure payment terminals in a PCI DSS-regulated environment. The demos below run my research code in your browser.</p>
       <div class="btn-row">
         <a class="btn primary" href="#research">Try the live demos</a>
         <a class="btn" href="https://www.linkedin.com/in/kasun-mg" target="_blank" rel="noopener">LinkedIn ↗</a>
@@ -327,7 +329,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <span><b>7</b> peer-reviewed publications</span>
         <span><b>PhD</b> Computer Science, AUT</span>
         <span><b>MSc</b> Network &amp; Information Security, Kingston</span>
-        <span><b>8+</b> years in IT</span>
+        <span><b>500+</b> secure terminals supported</span>
       </div>
     </div>
     <figure class="portrait">
@@ -370,21 +372,32 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
         <div class="demo" id="chain-demo">
           <div class="demo-head">
-            <span class="title"><b>Live demo</b> · tamper-evident footage · camera CAM-07</span>
+            <span class="title"><b>Live demo</b> · V_Chain ledger · Merkle root + proof of work</span>
             <span class="live">runs in your browser</span>
           </div>
           <div class="demo-body">
-            <p class="fine">Six frames from a simulated vehicle-mounted camera are fingerprinted and chained. Pick a frame, alter it, then verify the chain. Changed blocks are outlined.</p>
+            <p class="fine">Each frame is split into an 8 × 5 block matrix. Every block is hashed with SHA-256, the block hashes are combined into a Merkle root, and the frame is mined into the chain with proof of work, as in my V_Chain research testbed. Use the sample dash-cam clip or your own video, then alter a frame and verify.</p>
             <div class="frames" id="frames" role="group" aria-label="Choose a frame to tamper with"></div>
             <div class="btn-row">
               <button class="btn" id="btn-tamper" type="button">Alter frame 4</button>
               <button class="btn primary" id="btn-verify" type="button">Verify chain</button>
               <button class="btn" id="btn-reset" type="button">Reset footage</button>
             </div>
-            <div class="verdict" id="verdict" aria-live="polite"><span class="mark">✓</span><span>Preparing the ledger…</span></div>
+            <div class="chain-opts">
+              <label class="btn file-label" for="chain-file">Hash your own video or photos<input id="chain-file" type="file" accept="video/*,image/*" multiple></label>
+              <label class="opt" for="pow-diff">Proof-of-work difficulty
+                <select id="pow-diff">
+                  <option value="1">1 leading zero</option>
+                  <option value="2" selected>2 leading zeros</option>
+                  <option value="3">3 leading zeros</option>
+                </select>
+              </label>
+              <span class="mono fine" id="mine-stats"></span>
+            </div>
+            <div class="verdict" id="verdict" aria-live="polite"><span class="mark">…</span><span>Mining the sample footage into the chain…</span></div>
             <div class="ledger-wrap">
               <table class="ledger" aria-label="Video chain ledger">
-                <thead><tr><th>Block</th><th>Frame fingerprint (SHA-256)</th><th>Links to</th><th>Status</th></tr></thead>
+                <thead><tr><th>Block</th><th>Merkle root</th><th>Nonce</th><th>Block hash</th><th>Links to</th><th>Status</th></tr></thead>
                 <tbody id="ledger-body"></tbody>
               </table>
             </div>
@@ -420,7 +433,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <p class="sec-label">Applied computer vision</p>
       <div>
         <h2>Posture analysis from one ordinary camera</h2>
-        <p class="sec-intro">With Mahesh Babu Purushothaman at AUT, I built a smart vision-based method that tracks 33 body landmarks and flags manual-lifting postures linked to musculoskeletal injury in construction work. This demo uses the same landmark model (BlazePose, via MediaPipe) to measure joint angles.</p>
+        <p class="sec-intro">With Mahesh Babu Purushothaman at AUT, I built a smart vision-based method that tracks 33 body landmarks and flags manual-lifting postures linked to musculoskeletal injury in construction work. As a research assistant I applied the same approach to warehouse safety monitoring. This demo runs the method from my <a href="https://github.com/KTVshwajith/Pose-Detection-Neckline" target="_blank" rel="noopener">Pose-Detection-Neckline</a> code on the same landmark model (BlazePose, via MediaPipe).</p>
       </div>
     </div>
     <div class="body-grid">
@@ -428,40 +441,39 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <div class="content">
         <div class="demo">
           <div class="demo-head">
-            <span class="title"><b>Live demo</b> · joint-angle estimation · 33 landmarks</span>
+            <span class="title"><b>Live demo</b> · neck &amp; torso inclination · 33 landmarks</span>
             <span class="live">runs on your device</span>
           </div>
           <div class="demo-body">
             <div class="pose-grid">
               <div class="stage" id="stage">
                 <img id="pose-img" src="presenting-poster.jpg" alt="Photo being analysed" width="1400" height="933">
-                <video id="pose-video" playsinline muted hidden></video>
+                <video id="pose-video" playsinline muted loop hidden></video>
                 <canvas id="pose-canvas" aria-hidden="true"></canvas>
                 <p class="status" id="pose-status">Sample photo loaded. Press “Analyse photo” to detect the skeleton.</p>
               </div>
               <div class="readout">
                 <div class="btn-row">
                   <button class="btn primary" id="btn-analyse" type="button">Analyse photo</button>
-                  <label class="btn file-label" for="pose-file">Upload a photo<input id="pose-file" type="file" accept="image/*"></label>
+                  <label class="btn file-label" for="pose-file">Upload photo or video<input id="pose-file" type="file" accept="image/*,video/*"></label>
                   <button class="btn" id="btn-camera" type="button">Use camera</button>
                 </div>
-                <table class="angles" aria-label="Measured joint angles">
+                <table class="angles" aria-label="Measured posture angles">
                   <tbody>
-                    <tr><td>Trunk lean from vertical</td><td id="a-trunk">—</td></tr>
+                    <tr><td>Neck inclination (shoulder → ear)</td><td id="a-neck">—</td></tr>
+                    <tr><td>Torso inclination (hip → shoulder)</td><td id="a-torso">—</td></tr>
                     <tr><td>Left knee</td><td id="a-lknee">—</td></tr>
                     <tr><td>Right knee</td><td id="a-rknee">—</td></tr>
                     <tr><td>Left hip</td><td id="a-lhip">—</td></tr>
                     <tr><td>Right hip</td><td id="a-rhip">—</td></tr>
                     <tr><td>Left elbow</td><td id="a-lelbow">—</td></tr>
                     <tr><td>Right elbow</td><td id="a-relbow">—</td></tr>
-                    <tr><td>Left shoulder (arm raise)</td><td id="a-lsh">—</td></tr>
-                    <tr><td>Right shoulder (arm raise)</td><td id="a-rsh">—</td></tr>
                   </tbody>
                 </table>
-                <div class="assess" id="assess"><b>Lifting check:</b> run the model to see whether the back or knees would put strain on a lift.</div>
+                <div class="assess" id="assess"><b>Posture check:</b> run the model to measure the neck and back, as in a manual-lifting assessment.</div>
               </div>
             </div>
-            <p class="fine">Photos and camera frames are processed on your device and never uploaded. Thresholds are illustrative: trunk lean over 45° with straight knees is treated as a stoop lift.</p>
+            <p class="fine">Neck and torso inclination use the method from my <a href="https://github.com/KTVshwajith/Pose-Detection-Neckline" target="_blank" rel="noopener">Pose-Detection-Neckline</a> notebook (Python, OpenCV, MediaPipe), ported to JavaScript; the orange lines are its vertical reference lines. Everything is processed on your device and never uploaded. Thresholds are illustrative: neck over 40°, torso over 20°, or a torso over 45° with straight knees (a stoop lift) are flagged.</p>
           </div>
         </div>
       </div>
@@ -492,7 +504,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
             <div class="row"><span>Research</span><span>33-landmark posture-error detection for manual lifting (SASBE journal)</span></div>
             <div class="row"><span>Prototype</span><span>Browser version: the pose demo above</span></div>
             <div class="row"><span>Next</span><span>Native Android app, then iOS</span></div>
-            <a class="btn" href="#pose" style="justify-self:start">Try the prototype</a>
+            <div class="btn-row"><a class="btn" href="#pose">Try the prototype</a><a class="btn" href="https://github.com/KTVshwajith/Pose-Detection-ALL" target="_blank" rel="noopener">Code on GitHub ↗</a></div>
           </div>
         </article>
 
@@ -566,11 +578,12 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <div class="body-grid">
       <div></div>
       <div class="content timeline">
-        <div class="job"><span class="when">2025 – now</span><div><h3>Team Leader, Repair &amp; Restore</h3><p class="org">Verifone · Auckland</p><ul><li>Lead repair and restore work on secure payment terminals, with L1/L2 technical support</li><li>Manage incidents through ServiceNow across 500+ devices a month, with no major security incidents</li></ul></div></div>
-        <div class="job"><span class="when">2020 – 2024</span><div><h3>PhD Researcher, AI Security &amp; Computer Vision</h3><p class="org">Auckland University of Technology</p><ul><li>Built video blockchain frameworks protecting the integrity and privacy of smart-city surveillance footage</li><li>Designed AI-driven authentication to detect manipulated and AI-generated video</li><li>Built Python and OpenCV pipelines with YOLO and CNN models for large-scale video analysis</li></ul></div></div>
-        <div class="job"><span class="when">2022 – 2023</span><div><h3>Research Assistant, Computer Vision for Health &amp; Safety</h3><p class="org">Auckland University of Technology</p><ul><li>Applied pose estimation and ML to detect musculoskeletal injury risk in real time</li><li>Developed in Python, JavaScript and OpenCV; reported findings to industry stakeholders</li></ul></div></div>
-        <div class="job"><span class="when">2019 – 2022</span><div><h3>Programme Leader &amp; Lecturer, IT</h3><p class="org">Saegis Campus, Sri Lanka · delivered remotely from NZ</p><ul><li>Led IT certificate, diploma and BTEC Level 5 HND programmes: curriculum, assessment and quality assurance</li><li>Built and mentored the teaching team; launched new accredited programmes</li><li>Teaching areas: cryptography, network security, blockchain, IoT security</li></ul></div></div>
-        <div class="job"><span class="when">2016 – 2020</span><div><h3>IT Support Specialist, Infrastructure &amp; Security</h3><p class="org">Analytical Instruments (Pvt) Ltd · Colombo</p><ul><li>Administered Windows Server, Active Directory and Kaspersky endpoint security</li><li>Resolved 1,000+ L1/L2 tickets at 95% satisfaction; kept 99.9% network uptime</li></ul></div></div>
+        <div class="job"><span class="when">Feb 2025 – now</span><div><h3>IT Support Team Member</h3><p class="org">Verifone · Auckland</p><ul><li>Support 500+ secure payment terminals in a PCI DSS-regulated environment</li><li>Provide L1/L2 technical support and manage incidents through ServiceNow</li></ul></div></div>
+        <div class="job"><span class="when">Aug 2020 – Dec 2024</span><div><h3>PhD Research, AI Security, Blockchain &amp; Computer Vision</h3><p class="org">Auckland University of Technology</p><ul><li>Developed video blockchain frameworks to protect the integrity and privacy of surveillance footage in smart-city environments</li><li>Designed AI-driven authentication models to detect manipulated or AI-generated video, applicable to deepfake detection and digital forensics</li><li>Applied YOLO and CNN models for object recognition and anomaly detection in security footage</li><li>Built Python and OpenCV pipelines for large-scale video processing, validation and analysis</li><li>Presented to academic panels, industry partners and international conference audiences</li></ul></div></div>
+        <div class="job"><span class="when">Aug 2022 – Feb 2023</span><div><h3>Research Assistant, Computer Vision &amp; AI Health &amp; Safety Systems</h3><p class="org">Auckland University of Technology</p><ul><li>Used computer vision and machine learning to monitor workplace health and safety in warehouse environments</li><li>Assessed human pose to detect musculoskeletal injury risk in real time</li><li>Developed and debugged systems in Python, JavaScript and OpenCV; authored technical reports for stakeholders</li></ul></div></div>
+        <div class="job"><span class="when">Jan 2023 – Sep 2023</span><div><h3>Lecturer</h3><p class="org">Saegis Campus</p><ul><li>Taught information technology at degree level</li></ul></div></div>
+        <div class="job"><span class="when">Sep 2020 – Jul 2022</span><div><h3>Information Technology Tutor</h3><p class="org">Saegis Campus · Colombo, Sri Lanka</p><ul><li>Tutored IT students; also contributed to teaching at AUT</li></ul></div></div>
+        <div class="job"><span class="when">May 2016 – Sep 2020</span><div><h3>IT Systems Specialist</h3><p class="org">Analytical Instruments (Pvt) Ltd · Colombo, Sri Lanka</p><ul><li>Administered enterprise infrastructure: Windows Server, Active Directory and endpoint security</li><li>Achieved 99.9% uptime across 1,000+ support tickets</li></ul></div></div>
       </div>
     </div>
   </div>
@@ -594,8 +607,9 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
           <ul class="cred-list">
             <li><span class="what">PhD, Computer Science</span><span class="who">Auckland University of Technology · 2024</span></li>
             <li><span class="what">MSc, Network &amp; Information Security</span><span class="who">Kingston University, London · 2019</span></li>
-            <li><span class="what">BCS Professional Graduate Diploma (UK Honours equivalent)</span><span class="who">BCS Sri Lanka · 2017</span></li>
-            <li><span class="what">Diploma, Information Technology</span><span class="who">ESOFT Metro Campus</span></li>
+            <li><span class="what">UK Honours degree equivalent, Computer &amp; Information Sciences</span><span class="who">BCS Sri Lanka Region · 2017</span></li>
+            <li><span class="what">Diploma in Information Technology</span><span class="who">ESOFT Metro Campus</span></li>
+            <li><span class="what">Computer Operator Training Programme</span><span class="who">BIT International Systems</span></li>
           </ul>
         </div>
         <div class="cred-col">
@@ -603,8 +617,11 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
           <ul class="cred-list">
             <li><span class="state">Certified</span><span class="what">Certified in Cybersecurity (CC)</span><span class="who">ISC2</span></li>
             <li><span class="state">Certified</span><span class="what">ITIL 4 Foundation</span><span class="who">PeopleCert / AXELOS</span></li>
-            <li><span class="state">Certified</span><span class="what">Securing Cryptocurrencies</span><span class="who">Professional certificate</span></li>
-            <li><span class="state">Certified</span><span class="what">Blockchain series: Introduction, Beyond the Basics, Designing Solutions, Building an Ethereum App</span><span class="who">Four courses</span></li>
+            <li><span class="state">Certified</span><span class="what">Securing Cryptocurrencies</span><span class="who">Blockchain security</span></li>
+            <li><span class="state">Certified</span><span class="what">Designing Blockchain Solutions: Making the Case</span><span class="who">Blockchain</span></li>
+            <li><span class="state">Certified</span><span class="what">Building an Ethereum Blockchain App</span><span class="who">Blockchain</span></li>
+            <li><span class="state">Certified</span><span class="what">Introduction to Blockchain</span><span class="who">Blockchain</span></li>
+            <li><span class="state">Certified</span><span class="what">Blockchain: Beyond the Basics</span><span class="who">Blockchain</span></li>
           </ul>
         </div>
         <div class="cred-col">
@@ -625,7 +642,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <div class="wrap">
     <div class="sec-head">
       <p class="sec-label">Contact</p>
-      <div><h2>Let's talk</h2><p class="sec-intro">Auckland-based with full working rights. Open to hybrid or remote roles anywhere in New Zealand.</p></div>
+      <div><h2>Let's talk</h2><p class="sec-intro">Auckland-based with full working rights in New Zealand. Open to relocation for the right academic post. Languages: English, Sinhala.</p></div>
     </div>
     <div class="body-grid">
       <div></div>
@@ -640,11 +657,9 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <div class="open-to">
           <h3>Open to</h3>
           <ul>
-            <li>Cybersecurity, SOC analyst and information security roles</li>
-            <li>Postdoctoral research in AI, security or computer vision</li>
-            <li>Lecturing in IT or cybersecurity</li>
-            <li>Technical support and IT leadership roles</li>
-            <li>Consulting on video authentication and blockchain security</li>
+            <li>Lecturer or Programme Leader in IT, AI, cybersecurity or blockchain (university or polytechnic, NZ or international)</li>
+            <li>Postdoctoral research in AI security, computer vision or digital forensics</li>
+            <li>Cybersecurity Analyst or SOC Analyst roles that value research-grounded practitioners</li>
           </ul>
         </div>
       </div>
@@ -710,61 +725,59 @@ async function sha256(data) {
   } catch (e) { out.textContent = "unavailable here"; }
 })();
 
-/* ---------- Video chain demo ---------- */
+/* ---------- Video chain demo (V_Chain: block matrix, Merkle root, proof of work) ---------- */
 (function () {
-  const N = 6, W = 160, H = 90, COLS = 8, ROWS = 5;
+  const W = 160, H = 90, COLS = 8, ROWS = 5, MAX_FRAMES = 6;
   const BW = W / COLS, BH = H / ROWS;
   const framesEl = document.getElementById("frames");
   const ledgerBody = document.getElementById("ledger-body");
   const verdict = document.getElementById("verdict");
   const btnTamper = document.getElementById("btn-tamper");
-  let selected = 3;            // zero-based, frame 4
-  let ledger = [];             // what was recorded at capture time
-  const canvases = [], buttons = [];
+  const btnVerify = document.getElementById("btn-verify");
+  const btnReset = document.getElementById("btn-reset");
+  const fileInput = document.getElementById("chain-file");
+  const diffSel = document.getElementById("pow-diff");
+  const stats = document.getElementById("mine-stats");
+  let N = MAX_FRAMES, selected = 3, ledger = [], canvases = [], buttons = [], base = [], busy = false, hashCount = 0;
   const tampered = new Set();
 
-  function drawFrame(ctx, i) {
-    // sky
+  const say = (cls, mark, html) => { verdict.className = "verdict" + (cls ? " " + cls : ""); verdict.innerHTML = "<span class='mark'>" + mark + "</span><span>" + html + "</span>"; };
+  const setBusy = b => { busy = b; [btnTamper, btnVerify, btnReset, diffSel].forEach(el => (el.disabled = b)); };
+  const H256 = async d => { hashCount++; return sha256(d); };
+
+  // Sample clip: a simulated vehicle-mounted camera (CAM-07)
+  function drawSample(ctx, i) {
     const sky = ctx.createLinearGradient(0, 0, 0, 50);
     sky.addColorStop(0, "#8fb8c9"); sky.addColorStop(1, "#cfe0e4");
     ctx.fillStyle = sky; ctx.fillRect(0, 0, W, 50);
-    // buildings
     ctx.fillStyle = "#5d6f74";
     [[6, 22, 18], [28, 14, 14], [46, 28, 22], [74, 18, 16], [96, 10, 20], [120, 24, 16], [140, 16, 18]]
       .forEach(([x, top, w]) => ctx.fillRect(x - i * 2, top, w, 50 - top));
-    // road
     ctx.fillStyle = "#3b4244"; ctx.fillRect(0, 50, W, 40);
     ctx.fillStyle = "#e9e3c8";
     for (let x = -20; x < W + 20; x += 26) ctx.fillRect(x - (i * 9) % 26, 68, 13, 2);
-    // car ahead
     const cx = 70 + i * 4;
     ctx.fillStyle = "#b5532a"; ctx.fillRect(cx, 56, 26, 9);
     ctx.fillStyle = "#1d2526"; ctx.fillRect(cx + 3, 64, 5, 3); ctx.fillRect(cx + 18, 64, 5, 3);
-    // timestamp overlay
     ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, 92, 10);
     ctx.fillStyle = "#ffffff"; ctx.font = "7px monospace";
     ctx.fillText("CAM-07 08:31:0" + i + ".00", 3, 7);
   }
-
-  function blockData(ctx, c, r) {
-    return ctx.getImageData(c * BW, r * BH, BW, BH).data;
+  // A "pedestrian" pasted into a frame that never contained one
+  function tamperDraw(ctx, i) {
+    ctx.fillStyle = "#e8c547"; ctx.beginPath(); ctx.arc(34 + i, 54, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#2c6e8f"; ctx.fillRect(31 + i, 57, 6, 11);
+    ctx.fillStyle = "#1d2526"; ctx.fillRect(31 + i, 68, 2, 6); ctx.fillRect(35 + i, 68, 2, 6);
   }
-  async function frameRecord(i, prev) {
-    const ctx = canvases[i].getContext("2d", { willReadFrequently: true });
-    const blocks = [];
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) blocks.push(await sha256(blockData(ctx, c, r)));
-    const hash = await sha256(blocks.join("") + prev + i);
-    return { blocks, hash, prev };
-  }
-
-  function paintAll() {
-    for (let i = 0; i < N; i++) {
-      const ctx = canvases[i].getContext("2d", { willReadFrequently: true });
-      ctx.clearRect(0, 0, W, H); drawFrame(ctx, i);
-    }
+  function drawCover(ctx, src, sw, sh) {
+    const s = Math.max(W / sw, H / sh), dw = sw * s, dh = sh * s;
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(src, (W - dw) / 2, (H - dh) / 2, dw, dh);
   }
 
-  function build() {
+  const ctxOf = i => canvases[i].getContext("2d", { willReadFrequently: true });
+  function buildFrames(n) {
+    N = n; selected = Math.min(3, n - 1); framesEl.innerHTML = ""; canvases = []; buttons = []; tampered.clear();
     for (let i = 0; i < N; i++) {
       const b = document.createElement("button");
       b.type = "button"; b.className = "frame-btn";
@@ -780,100 +793,177 @@ async function sha256(data) {
       });
       framesEl.append(b); canvases.push(cv); buttons.push(b);
     }
+    btnTamper.textContent = "Alter frame " + (selected + 1);
+  }
+  function captureBase() { base = canvases.map((c, i) => ctxOf(i).getImageData(0, 0, W, H)); }
+  function paint() {
+    base.forEach((d, i) => ctxOf(i).putImageData(d, 0, 0));
+    tampered.forEach(i => tamperDraw(ctxOf(i), i));
+  }
+
+  async function blockHashes(i) {
+    const ctx = ctxOf(i), out = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++)
+      out.push(H256(ctx.getImageData(c * BW, r * BH, BW, BH).data));
+    return Promise.all(out);
+  }
+  // Merkle tree over the block hashes (odd levels duplicate the last node)
+  async function merkleRoot(hashes) {
+    let level = hashes.slice();
+    while (level.length > 1) {
+      if (level.length % 2) level.push(level[level.length - 1]);
+      const next = [];
+      for (let k = 0; k < level.length; k += 2) next.push(H256(level[k] + level[k + 1]));
+      level = await Promise.all(next);
+    }
+    return level[0];
+  }
+  const header = (i, prev, root, nonce) => i + "|" + prev + "|" + root + "|" + nonce;
+  // Proof of work: find a nonce so the block hash starts with `d` zeros (hashes tried in batches)
+  async function mine(i, prev, root, d) {
+    const target = "0".repeat(d);
+    for (let start = 0; ; start += 64) {
+      const batch = [];
+      for (let n = start; n < start + 64; n++) batch.push(H256(header(i, prev, root, n)));
+      const res = await Promise.all(batch);
+      const k = res.findIndex(h => h.startsWith(target));
+      if (k >= 0) return { nonce: start + k, hash: res[k] };
+    }
   }
 
   async function record() {
+    setBusy(true); hashCount = 0;
+    const d = +diffSel.value, t0 = performance.now();
+    say("", "…", "Mining " + N + " frames into the chain at difficulty " + d + "…");
     ledger = []; let prev = "0".repeat(64);
-    for (let i = 0; i < N; i++) { const rec = await frameRecord(i, prev); ledger.push(rec); prev = rec.hash; }
+    for (let i = 0; i < N; i++) {
+      const blocks = await blockHashes(i);
+      const root = await merkleRoot(blocks);
+      const { nonce, hash } = await mine(i, prev, root, d);
+      ledger.push({ blocks, root, nonce, hash, prev });
+      prev = hash;
+    }
+    const secs = ((performance.now() - t0) / 1000).toFixed(2);
+    stats.textContent = "Mined " + N + " blocks in " + secs + " s · " + hashCount.toLocaleString() + " SHA-256 hashes";
+    setBusy(false);
   }
 
-  function short(h) { return h.slice(0, 10) + "…"; }
-
+  const short = h => h.slice(0, 10) + "…";
   function renderLedger(statuses) {
     ledgerBody.innerHTML = "";
     ledger.forEach((rec, i) => {
-      const tr = document.createElement("tr");
       const st = statuses ? statuses[i] : { cls: "ok", text: "Verified" };
+      const tr = document.createElement("tr");
       tr.innerHTML =
         "<td class='mono'>#" + String(i + 1).padStart(2, "0") + "</td>" +
+        "<td class='mono'>" + short(rec.root) + "</td>" +
+        "<td class='mono'>" + rec.nonce + "</td>" +
         "<td class='mono'>" + short(rec.hash) + "</td>" +
         "<td class='mono'>" + (i === 0 ? "genesis" : short(rec.prev)) + "</td>" +
         "<td><span class='chip " + st.cls + "'>" + st.text + "</span></td>";
       ledgerBody.append(tr);
     });
   }
-
   function outline(i, changed) {
-    const ctx = canvases[i].getContext("2d");
-    const color = getComputedStyle(document.documentElement).getPropertyValue("--signal").trim() || "#b8460d";
-    ctx.strokeStyle = color; ctx.lineWidth = 2;
-    changed.forEach(k => {
-      const c = k % COLS, r = Math.floor(k / COLS);
-      ctx.strokeRect(c * BW + 1, r * BH + 1, BW - 2, BH - 2);
-    });
+    const ctx = ctxOf(i);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--signal").trim() || "#b8460d";
+    ctx.lineWidth = 2;
+    changed.forEach(k => ctx.strokeRect((k % COLS) * BW + 1, Math.floor(k / COLS) * BH + 1, BW - 2, BH - 2));
   }
 
   async function verify() {
-    const statuses = []; let firstBad = -1; let changedCount = 0;
-    paintAllWithTamper();
-    let prevRecorded = "0".repeat(64);
+    if (busy || !ledger.length) return;
+    setBusy(true); paint();
+    const statuses = []; let firstBad = -1, changedCount = 0;
     for (let i = 0; i < N; i++) {
-      const now = await frameRecord(i, prevRecorded);
-      const changed = now.blocks.map((h, k) => (h !== ledger[i].blocks[k] ? k : -1)).filter(k => k >= 0);
-      if (changed.length) {
-        statuses.push({ cls: "bad", text: "Altered · " + changed.length + " block" + (changed.length > 1 ? "s" : "") });
-        if (firstBad < 0) firstBad = i; changedCount += changed.length; outline(i, changed);
-      } else if (firstBad >= 0) {
-        statuses.push({ cls: "warn", text: "Link broken upstream" });
-      } else statuses.push({ cls: "ok", text: "Verified" });
-      prevRecorded = ledger[i].hash;
+      const blocks = await blockHashes(i);
+      const changed = blocks.map((h, k) => (h !== ledger[i].blocks[k] ? k : -1)).filter(k => k >= 0);
+      const root = await merkleRoot(blocks);
+      const prevOk = i === 0 || ledger[i].prev === ledger[i - 1].hash;
+      const hashOk = (await H256(header(i, ledger[i].prev, root, ledger[i].nonce))) === ledger[i].hash;
+      if (changed.length || !hashOk || !prevOk) {
+        statuses.push({ cls: "bad", text: "Altered · " + changed.length + " block" + (changed.length === 1 ? "" : "s") });
+        if (firstBad < 0) firstBad = i;
+        changedCount += changed.length; outline(i, changed);
+      } else if (firstBad >= 0) statuses.push({ cls: "warn", text: "Link broken upstream" });
+      else statuses.push({ cls: "ok", text: "Verified" });
     }
     renderLedger(statuses);
-    if (firstBad < 0) {
-      verdict.className = "verdict";
-      verdict.innerHTML = "<span class='mark'>✓</span><span>All " + N + " frames match the ledger. The footage is intact.</span>";
-    } else {
-      verdict.className = "verdict bad";
-      verdict.innerHTML = "<span class='mark'>✗</span><span>Tampering detected in frame " + (firstBad + 1) + ": " + changedCount +
-        " of " + COLS * ROWS + " blocks changed (outlined). Frames after it can no longer be trusted because their links point to the original fingerprint.</span>";
+    if (firstBad < 0) say("", "✓", "All " + N + " frames match their Merkle roots and every link in the chain holds. The footage is intact.");
+    else say("bad", "✗", "Tampering detected in frame " + (firstBad + 1) + ": " + changedCount + " of " + COLS * ROWS +
+      " blocks changed (outlined), so its Merkle root and block hash no longer match the ledger. Frames after it can't be trusted because they link to the original hash.");
+    setBusy(false);
+  }
+
+  async function loadSample() {
+    buildFrames(MAX_FRAMES);
+    canvases.forEach((c, i) => drawSample(ctxOf(i), i));
+    captureBase(); await record(); await verify();
+  }
+
+  async function framesFromVideo(file) {
+    const v = document.createElement("video");
+    v.muted = true; v.playsInline = true; v.preload = "auto";
+    const url = URL.createObjectURL(file); v.src = url;
+    await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = () => rej(new Error("unplayable")); });
+    if (!isFinite(v.duration) || v.duration <= 0) throw new Error("no duration");
+    buildFrames(MAX_FRAMES);
+    for (let i = 0; i < N; i++) {
+      v.currentTime = Math.min(v.duration - 0.05, ((i + 0.5) / N) * v.duration);
+      await new Promise(r => (v.onseeked = r));
+      drawCover(ctxOf(i), v, v.videoWidth, v.videoHeight);
+    }
+    URL.revokeObjectURL(url);
+  }
+  async function framesFromImages(files) {
+    const list = files.slice(0, MAX_FRAMES);
+    if (list.length < 2) throw new Error("need 2");
+    buildFrames(list.length);
+    for (let i = 0; i < list.length; i++) {
+      const url = URL.createObjectURL(list[i]);
+      const im = new Image(); im.src = url; await im.decode();
+      drawCover(ctxOf(i), im, im.naturalWidth, im.naturalHeight);
+      URL.revokeObjectURL(url);
     }
   }
 
-  function tamperDraw(ctx, i) {
-    // paste a "person" that was never there
-    ctx.fillStyle = "#e8c547"; ctx.beginPath(); ctx.arc(34 + i, 54, 3.2, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#2c6e8f"; ctx.fillRect(31 + i, 57, 6, 11);
-    ctx.fillStyle = "#1d2526"; ctx.fillRect(31 + i, 68, 2, 6); ctx.fillRect(35 + i, 68, 2, 6);
-  }
-  function paintAllWithTamper() {
-    paintAll();
-    tampered.forEach(i => tamperDraw(canvases[i].getContext("2d"), i));
-  }
+  fileInput.addEventListener("change", async () => {
+    const files = Array.from(fileInput.files || []); fileInput.value = "";
+    if (!files.length || busy) return;
+    const vid = files.find(f => f.type.startsWith("video/"));
+    try {
+      say("", "…", "Reading your " + (vid ? "video" : "photos") + " on this device…");
+      if (vid) await framesFromVideo(vid);
+      else await framesFromImages(files.filter(f => f.type.startsWith("image/")));
+    } catch (e) {
+      say("bad", "!", vid ? "That video couldn't be read in this browser. Try a short MP4 clip." : "Choose a video, or between 2 and 6 photos.");
+      return;
+    }
+    captureBase(); await record(); await verify();
+  });
 
   btnTamper.addEventListener("click", () => {
-    tampered.add(selected);
-    paintAllWithTamper();
-    verdict.className = "verdict";
-    verdict.innerHTML = "<span class='mark'>…</span><span>Frame " + (selected + 1) + " now shows a pedestrian who was never there. Press “Verify chain”.</span>";
+    if (busy) return;
+    tampered.add(selected); paint();
+    say("", "…", "Frame " + (selected + 1) + " now shows a pedestrian who was never there. Press “Verify chain”.");
   });
-  document.getElementById("btn-verify").addEventListener("click", verify);
-  document.getElementById("btn-reset").addEventListener("click", async () => {
-    tampered.clear(); paintAll(); await verify();
-  });
+  btnVerify.addEventListener("click", verify);
+  btnReset.addEventListener("click", async () => { if (busy) return; tampered.clear(); paint(); await verify(); });
+  diffSel.addEventListener("change", async () => { if (busy) return; tampered.clear(); paint(); await record(); await verify(); });
 
-  build(); paintAll();
   if (!(window.crypto && crypto.subtle)) {
-    verdict.className = "verdict bad";
-    verdict.innerHTML = "<span class='mark'>!</span><span>This browser blocks the cryptography API on this page. Open the site over https to run the demo.</span>";
+    buildFrames(MAX_FRAMES); canvases.forEach((c, i) => drawSample(ctxOf(i), i));
+    say("bad", "!", "This browser blocks the cryptography API on this page. Open the site over https to run the demo.");
     return;
   }
-  record().then(verify);
+  loadSample();
 })();
 
 /* ---------- Pose demo ---------- */
 (function () {
   const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
   const MODEL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+  const MODEL_FAIL = "The pose model couldn't load here. It needs internet access to cdn.jsdelivr.net and storage.googleapis.com.";
   const img = document.getElementById("pose-img");
   const video = document.getElementById("pose-video");
   const canvas = document.getElementById("pose-canvas");
@@ -882,11 +972,13 @@ async function sha256(data) {
   const btnAnalyse = document.getElementById("btn-analyse");
   const btnCamera = document.getElementById("btn-camera");
   const fileInput = document.getElementById("pose-file");
-  let landmarker = null, vision = null, mode = "IMAGE", stream = null, raf = 0, lastT = -1;
+  let landmarker = null, vision = null, mode = "IMAGE", stream = null, raf = 0, lastT = -1, videoUrl = null;
 
   const CONNECTIONS = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28],[27,29],[29,31],[27,31],[28,30],[30,32],[28,32],[15,17],[15,19],[16,18],[16,20],[0,11],[0,12]];
+  const IDS = ["a-neck","a-torso","a-lknee","a-rknee","a-lhip","a-rhip","a-lelbow","a-relbow"];
 
   function setStatus(t) { status.textContent = t; status.hidden = !t; }
+  const tok = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
   async function load() {
     if (landmarker) return landmarker;
@@ -901,11 +993,25 @@ async function sha256(data) {
   }
   async function setMode(m) { if (mode !== m) { await landmarker.setOptions({ runningMode: m }); mode = m; } }
 
+  // Joint angle at b, formed by a-b-c
   function angle(a, b, c) {
     const ab = [a.x - b.x, a.y - b.y], cb = [c.x - b.x, c.y - b.y];
-    const dot = ab[0] * cb[0] + ab[1] * cb[1];
     const m = Math.hypot(...ab) * Math.hypot(...cb);
-    return m ? Math.acos(Math.max(-1, Math.min(1, dot / m))) * 180 / Math.PI : NaN;
+    return m ? Math.acos(Math.max(-1, Math.min(1, (ab[0] * cb[0] + ab[1] * cb[1]) / m))) * 180 / Math.PI : NaN;
+  }
+  // findAngle() from the Pose-Detection-Neckline notebook:
+  // angle between the segment (x1,y1)->(x2,y2) and a vertical line through (x1,y1).
+  //   theta = acos( (y2 - y1) * (-y1) / ( sqrt((x2-x1)^2 + (y2-y1)^2) * y1 ) )
+  function findAngle(x1, y1, x2, y2) {
+    const d = Math.hypot(x2 - x1, y2 - y1);
+    if (!d || !y1) return NaN;
+    const c = ((y2 - y1) * -y1) / (d * y1);
+    return Math.acos(Math.max(-1, Math.min(1, c))) * 180 / Math.PI;
+  }
+  // The notebook uses the left side (shoulder 11, ear 7, hip 23); fall back to the right side if it's hidden.
+  function pickSide(p) {
+    const vis = ix => ix.reduce((s, i) => s + (p[i].v ?? p[i].visibility ?? 1), 0);
+    return vis([11, 7, 23]) >= vis([12, 8, 24]) ? { sh: 11, ear: 7, hip: 23 } : { sh: 12, ear: 8, hip: 24 };
   }
 
   // Map normalised landmarks to the displayed box (object-fit: contain)
@@ -921,61 +1027,101 @@ async function sha256(data) {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!lm) return;
-    const css = getComputedStyle(document.documentElement);
-    const acc = css.getPropertyValue("--accent").trim() || "#0a6670";
+    const acc = tok("--accent") || "#0a6670", sig = tok("--signal") || "#b8460d";
     const P = p => [fit.ox + p.x * fit.w * fit.s, fit.oy + p.y * fit.h * fit.s];
-    ctx.lineWidth = 3 * fit.dpr; ctx.strokeStyle = acc; ctx.lineCap = "round";
+    ctx.lineCap = "round";
+    ctx.lineWidth = 3 * fit.dpr; ctx.strokeStyle = acc;
     CONNECTIONS.forEach(([a, b]) => {
       if ((lm[a].visibility ?? 1) < 0.4 || (lm[b].visibility ?? 1) < 0.4) return;
       const [x1, y1] = P(lm[a]), [x2, y2] = P(lm[b]);
       ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     });
+    // Neckline overlay, as drawn in the notebook: shoulder→ear, hip→shoulder, plus vertical references
+    const s = pickSide(lm);
+    const [sx, sy] = P(lm[s.sh]), [ex, ey] = P(lm[s.ear]), [hx, hy] = P(lm[s.hip]);
+    const ref = Math.max(30 * fit.dpr, Math.hypot(sx - hx, sy - hy) * 0.45);
+    ctx.lineWidth = 3.5 * fit.dpr; ctx.strokeStyle = sig;
+    [[sx, sy, ex, ey], [sx, sy, sx, sy - ref], [hx, hy, sx, sy], [hx, hy, hx, hy - ref]].forEach(([a, b, c, d]) => {
+      ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c, d); ctx.stroke();
+    });
     lm.forEach((p, i) => {
-      if (i < 11 && i !== 0) return;
+      if (i < 11 && i !== 0 && i !== s.ear) return;
       if ((p.visibility ?? 1) < 0.4) return;
       const [x, y] = P(p);
-      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, 4.5 * fit.dpr, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(x, y, 3 * fit.dpr, 0, Math.PI * 2); ctx.fill();
+      const key = i === s.sh || i === s.ear || i === s.hip;
+      ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, (key ? 6 : 4.5) * fit.dpr, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = key ? sig : acc; ctx.beginPath(); ctx.arc(x, y, (key ? 4 : 3) * fit.dpr, 0, Math.PI * 2); ctx.fill();
     });
   }
 
   function readout(lm, srcW, srcH) {
     const put = (id, v) => (document.getElementById(id).textContent = isNaN(v) ? "—" : Math.round(v) + "°");
     if (!lm) {
-      ["a-trunk","a-lknee","a-rknee","a-lhip","a-rhip","a-lelbow","a-relbow","a-lsh","a-rsh"].forEach(id => put(id, NaN));
-      assess.className = "assess"; assess.innerHTML = "<b>Lifting check:</b> no person found. Try a photo with the whole body in view.";
+      IDS.forEach(id => put(id, NaN));
+      assess.className = "assess"; assess.innerHTML = "<b>Posture check:</b> no person found. Try a frame with the head, shoulders and hips in view.";
       return;
     }
-    // use pixel space so angles aren't distorted by aspect ratio
+    // pixel space, so angles aren't distorted by the frame's aspect ratio
     const p = lm.map(q => ({ x: q.x * srcW, y: q.y * srcH, v: q.visibility ?? 1 }));
     const ok = (...ix) => ix.every(i => p[i].v >= 0.5);
     const A = (a, b, c) => (ok(a, b, c) ? angle(p[a], p[b], p[c]) : NaN);
-    const lk = A(23, 25, 27), rk = A(24, 26, 28), lh = A(11, 23, 25), rh = A(12, 24, 26);
-    put("a-lknee", lk); put("a-rknee", rk); put("a-lhip", lh); put("a-rhip", rh);
+    const s = pickSide(p);
+    const neck = ok(s.sh, s.ear) ? findAngle(p[s.sh].x, p[s.sh].y, p[s.ear].x, p[s.ear].y) : NaN;
+    const torso = ok(s.hip, s.sh) ? findAngle(p[s.hip].x, p[s.hip].y, p[s.sh].x, p[s.sh].y) : NaN;
+    const lk = A(23, 25, 27), rk = A(24, 26, 28);
+    put("a-neck", neck); put("a-torso", torso);
+    put("a-lknee", lk); put("a-rknee", rk);
+    put("a-lhip", A(11, 23, 25)); put("a-rhip", A(12, 24, 26));
     put("a-lelbow", A(11, 13, 15)); put("a-relbow", A(12, 14, 16));
-    put("a-lsh", A(13, 11, 23)); put("a-rsh", A(14, 12, 24));
-    let trunk = NaN;
-    if (ok(11, 12, 23, 24)) {
-      const sh = { x: (p[11].x + p[12].x) / 2, y: (p[11].y + p[12].y) / 2 };
-      const hp = { x: (p[23].x + p[24].x) / 2, y: (p[23].y + p[24].y) / 2 };
-      trunk = Math.abs(Math.atan2(sh.x - hp.x, hp.y - sh.y)) * 180 / Math.PI;
-    }
-    put("a-trunk", trunk);
     const knees = [lk, rk].filter(v => !isNaN(v));
     const knee = knees.length ? Math.max(...knees) : NaN;
-    if (isNaN(trunk)) {
-      assess.className = "assess"; assess.innerHTML = "<b>Lifting check:</b> shoulders and hips need to be visible to judge back posture.";
-    } else if (trunk > 45 && (isNaN(knee) || knee > 150)) {
-      assess.className = "assess bad"; assess.innerHTML = "<b>Stoop lift:</b> the back is leaning " + Math.round(trunk) + "° with straight knees. Bend the knees and keep the back upright to reduce strain.";
-    } else if (trunk > 20) {
-      assess.className = "assess bad"; assess.innerHTML = "<b>Moderate lean:</b> trunk at " + Math.round(trunk) + "°. Acceptable briefly, but avoid holding or lifting load in this position.";
+    const r = Math.round;
+    if (isNaN(torso)) {
+      assess.className = "assess"; assess.innerHTML = "<b>Posture check:</b> the shoulder and hip need to be visible to measure the back.";
+    } else if (torso > 45 && (isNaN(knee) || knee > 150)) {
+      assess.className = "assess bad"; assess.innerHTML = "<b>Stoop lift:</b> torso inclined " + r(torso) + "° with straight knees. Bend the knees and keep the back upright to reduce strain.";
+    } else if (!isNaN(neck) && neck > 40) {
+      assess.className = "assess bad"; assess.innerHTML = "<b>Forward head:</b> neck inclined " + r(neck) + "° from vertical. Bring the ears back over the shoulders.";
+    } else if (torso > 20) {
+      assess.className = "assess bad"; assess.innerHTML = "<b>Leaning:</b> torso inclined " + r(torso) + "°. Fine briefly, but avoid holding or lifting load like this.";
     } else {
-      assess.className = "assess ok"; assess.innerHTML = "<b>Neutral back:</b> trunk within 20° of vertical. A safe starting posture for a lift.";
+      assess.className = "assess ok"; assess.innerHTML = "<b>Good alignment:</b> neck " + (isNaN(neck) ? "not visible" : r(neck) + "°") + ", torso " + r(torso) + "° from vertical.";
     }
   }
 
+  function stopVideo() {
+    if (raf) cancelAnimationFrame(raf); raf = 0;
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.pause(); video.removeAttribute("src"); video.srcObject = null; video.load();
+    if (videoUrl) { URL.revokeObjectURL(videoUrl); videoUrl = null; }
+    video.hidden = true; video.classList.remove("mirror-v"); img.hidden = false;
+    btnCamera.textContent = "Use camera";
+  }
+
+  async function runVideo(mirror) {
+    img.hidden = true; video.hidden = false;
+    video.style.transform = mirror ? "scaleX(-1)" : "none";
+    canvas.classList.toggle("mirror", mirror);
+    try { await load(); await setMode("VIDEO"); }
+    catch (e) { console.error(e); setStatus(MODEL_FAIL); return; }
+    setStatus("");
+    lastT = -1;
+    const loop = () => {
+      if (video.hidden) return;
+      if (video.currentTime !== lastT && video.videoWidth && !video.paused) {
+        lastT = video.currentTime;
+        const res = landmarker.detectForVideo(video, performance.now());
+        const lm = res.landmarks && res.landmarks[0];
+        draw(lm, fitBox(video.videoWidth, video.videoHeight));
+        readout(lm, video.videoWidth, video.videoHeight);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    loop();
+  }
+
   async function analyseImage() {
-    stopCamera();
+    stopVideo();
     btnAnalyse.disabled = true;
     try {
       await load(); await setMode("IMAGE");
@@ -988,60 +1134,46 @@ async function sha256(data) {
       readout(lm, img.naturalWidth, img.naturalHeight);
       setStatus(lm ? "" : "No person detected in this photo.");
     } catch (e) {
-      console.error(e);
-      setStatus("The pose model couldn't load here. It needs internet access to cdn.jsdelivr.net and storage.googleapis.com.");
+      console.error(e); setStatus(MODEL_FAIL);
     } finally { btnAnalyse.disabled = false; }
   }
 
-  fileInput.addEventListener("change", () => {
+  fileInput.addEventListener("change", async () => {
     const f = fileInput.files && fileInput.files[0];
     if (!f) return;
-    stopCamera();
-    const url = URL.createObjectURL(f);
-    img.onload = () => { analyseImage(); };
-    img.src = url; img.alt = "Your uploaded photo";
-    const ctx = canvas.getContext("2d"); ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stopVideo();
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    if (f.type.startsWith("video/")) {
+      videoUrl = URL.createObjectURL(f);
+      video.src = videoUrl;
+      try { await video.play(); } catch (e) { setStatus("This video format can't be played in your browser. Try an MP4 file."); return; }
+      runVideo(false);
+    } else {
+      img.onload = () => { img.onload = null; analyseImage(); };
+      img.src = URL.createObjectURL(f); img.alt = "Your uploaded photo";
+    }
+    fileInput.value = "";
   });
 
   btnAnalyse.addEventListener("click", analyseImage);
 
-  function stopCamera() {
-    if (raf) cancelAnimationFrame(raf); raf = 0;
-    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-    video.hidden = true; img.hidden = false; btnCamera.textContent = "Use camera";
-  }
-
   btnCamera.addEventListener("click", async () => {
-    if (stream) { stopCamera(); setStatus(""); return; }
+    if (stream) { stopVideo(); setStatus(""); return; }
+    stopVideo();
     try {
       setStatus("Asking for camera access…");
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 960, height: 640 }, audio: false });
     } catch (e) {
       stream = null;
-      setStatus("Camera access was blocked. Allow the camera in your browser, or upload a photo instead.");
+      setStatus("Camera access was blocked. Allow the camera in your browser, or upload a photo or video instead.");
       return;
     }
     video.srcObject = stream; await video.play();
-    img.hidden = true; video.hidden = false; btnCamera.textContent = "Stop camera";
-    try { await load(); await setMode("VIDEO"); }
-    catch (e) { setStatus("The pose model couldn't load here. It needs internet access to cdn.jsdelivr.net and storage.googleapis.com."); return; }
-    setStatus("");
-    canvas.classList.add("mirror");
-    const loop = () => {
-      if (!stream) return;
-      if (video.currentTime !== lastT && video.videoWidth) {
-        lastT = video.currentTime;
-        const res = landmarker.detectForVideo(video, performance.now());
-        const lm = res.landmarks && res.landmarks[0];
-        draw(lm, fitBox(video.videoWidth, video.videoHeight));
-        readout(lm, video.videoWidth, video.videoHeight);
-      }
-      raf = requestAnimationFrame(loop);
-    };
-    loop();
+    btnCamera.textContent = "Stop camera";
+    runVideo(true);
   });
 
-  window.addEventListener("resize", () => { const c = canvas.getContext("2d"); c.clearRect(0, 0, canvas.width, canvas.height); });
+  window.addEventListener("resize", () => { canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height); });
 })();
 </script>
 </body>

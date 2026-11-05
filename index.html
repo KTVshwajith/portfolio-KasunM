@@ -178,7 +178,7 @@ table.ledger { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-wi
 .stage { position: relative; border-radius: 10px; overflow: hidden; background: var(--sunk); aspect-ratio: 3 / 2; }
 .stage img, .stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .stage canvas.mirror { transform: scaleX(-1); }
-.stage .status { position: absolute; left: 10px; bottom: 10px; right: 10px; font-family: var(--ff-mono); font-size: 0.74rem; background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink); padding: 6px 10px; border-radius: 6px; }
+.stage .status { position: absolute; left: 10px; top: 10px; right: 10px; font-family: var(--ff-mono); font-size: 0.74rem; background: color-mix(in srgb, var(--surface) 92%, transparent); color: var(--ink); padding: 6px 10px; border-radius: 6px; }
 .readout { display: grid; gap: 14px; }
 .angles { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .angles td { padding: 7px 0; border-bottom: 1px solid var(--line); }
@@ -972,7 +972,7 @@ async function sha256(data) {
   const btnAnalyse = document.getElementById("btn-analyse");
   const btnCamera = document.getElementById("btn-camera");
   const fileInput = document.getElementById("pose-file");
-  let landmarker = null, vision = null, mode = "IMAGE", stream = null, raf = 0, lastT = -1, videoUrl = null;
+  let landmarker = null, vision = null, fileset = null, delegate = "GPU", mode = "IMAGE", stream = null, raf = 0, lastT = -1, videoUrl = null;
 
   const CONNECTIONS = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28],[27,29],[29,31],[27,31],[28,30],[30,32],[28,32],[15,17],[15,19],[16,18],[16,20],[0,11],[0,12]];
   const IDS = ["a-neck","a-torso","a-lknee","a-rknee","a-lhip","a-rhip","a-lelbow","a-relbow"];
@@ -985,11 +985,19 @@ async function sha256(data) {
     setStatus("Loading the pose model (about 6 MB, first time only)…");
     vision = await import(CDN + "/vision_bundle.mjs");
     const files = await vision.FilesetResolver.forVisionTasks(CDN + "/wasm");
-    const opts = d => ({ baseOptions: { modelAssetPath: MODEL, delegate: d }, runningMode: "IMAGE", numPoses: 1 });
-    try { landmarker = await vision.PoseLandmarker.createFromOptions(files, opts("GPU")); }
-    catch (e) { landmarker = await vision.PoseLandmarker.createFromOptions(files, opts("CPU")); }
-    mode = "IMAGE";
+    fileset = files;
+    try { await create("GPU", "IMAGE"); }
+    catch (e) { console.warn("GPU delegate unavailable, using CPU", e); await create("CPU", "IMAGE"); }
     return landmarker;
+  }
+  // Lower confidence thresholds than the defaults help with dim rooms and close-up laptop webcams
+  async function create(d, runningMode) {
+    if (landmarker) { try { landmarker.close(); } catch (e) {} }
+    landmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
+      baseOptions: { modelAssetPath: MODEL, delegate: d }, runningMode, numPoses: 1,
+      minPoseDetectionConfidence: 0.3, minPosePresenceConfidence: 0.3, minTrackingConfidence: 0.3
+    });
+    delegate = d; mode = runningMode;
   }
   async function setMode(m) { if (mode !== m) { await landmarker.setOptions({ runningMode: m }); mode = m; } }
 
@@ -1038,12 +1046,14 @@ async function sha256(data) {
     });
     // Neckline overlay, as drawn in the notebook: shoulder→ear, hip→shoulder, plus vertical references
     const s = pickSide(lm);
+    const seen = i => (lm[i].visibility ?? 1) >= 0.4;
     const [sx, sy] = P(lm[s.sh]), [ex, ey] = P(lm[s.ear]), [hx, hy] = P(lm[s.hip]);
-    const ref = Math.max(30 * fit.dpr, Math.hypot(sx - hx, sy - hy) * 0.45);
+    const ref = seen(s.hip) ? Math.max(30 * fit.dpr, Math.hypot(sx - hx, sy - hy) * 0.45) : 60 * fit.dpr;
+    const lines = [];
+    if (seen(s.sh) && seen(s.ear)) lines.push([sx, sy, ex, ey], [sx, sy, sx, sy - ref]);
+    if (seen(s.sh) && seen(s.hip)) lines.push([hx, hy, sx, sy], [hx, hy, hx, hy - ref]);
     ctx.lineWidth = 3.5 * fit.dpr; ctx.strokeStyle = sig;
-    [[sx, sy, ex, ey], [sx, sy, sx, sy - ref], [hx, hy, sx, sy], [hx, hy, hx, hy - ref]].forEach(([a, b, c, d]) => {
-      ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c, d); ctx.stroke();
-    });
+    lines.forEach(([a, b, c, d]) => { ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(c, d); ctx.stroke(); });
     lm.forEach((p, i) => {
       if (i < 11 && i !== 0 && i !== s.ear) return;
       if ((p.visibility ?? 1) < 0.4) return;
@@ -1076,8 +1086,12 @@ async function sha256(data) {
     const knees = [lk, rk].filter(v => !isNaN(v));
     const knee = knees.length ? Math.max(...knees) : NaN;
     const r = Math.round;
-    if (isNaN(torso)) {
-      assess.className = "assess"; assess.innerHTML = "<b>Posture check:</b> the shoulder and hip need to be visible to measure the back.";
+    if (isNaN(torso) && !isNaN(neck)) {
+      assess.className = neck > 40 ? "assess bad" : "assess ok";
+      assess.innerHTML = "<b>" + (neck > 40 ? "Forward head:" : "Neck aligned:") + "</b> neck inclined " + r(neck) +
+        "° from vertical. Your hips are out of view, so the back isn't measured; step back from the camera to include them.";
+    } else if (isNaN(torso)) {
+      assess.className = "assess"; assess.innerHTML = "<b>Posture check:</b> person found, but turn slightly sideways so one shoulder, ear and hip are clearly visible.";
     } else if (torso > 45 && (isNaN(knee) || knee > 150)) {
       assess.className = "assess bad"; assess.innerHTML = "<b>Stoop lift:</b> torso inclined " + r(torso) + "° with straight knees. Bend the knees and keep the back upright to reduce strain.";
     } else if (!isNaN(neck) && neck > 40) {
@@ -1104,16 +1118,31 @@ async function sha256(data) {
     canvas.classList.toggle("mirror", mirror);
     try { await load(); await setMode("VIDEO"); }
     catch (e) { console.error(e); setStatus(MODEL_FAIL); return; }
-    setStatus("");
+    setStatus("Looking for a person…");
     lastT = -1;
-    const loop = () => {
+    let lastSeen = performance.now(), frames = 0, fpsT = performance.now(), fps = 0, recovering = false;
+    const loop = async () => {
       if (video.hidden) return;
-      if (video.currentTime !== lastT && video.videoWidth && !video.paused) {
+      if (video.currentTime !== lastT && video.videoWidth && !video.paused && !recovering) {
         lastT = video.currentTime;
-        const res = landmarker.detectForVideo(video, performance.now());
-        const lm = res.landmarks && res.landmarks[0];
-        draw(lm, fitBox(video.videoWidth, video.videoHeight));
-        readout(lm, video.videoWidth, video.videoHeight);
+        try {
+          const res = landmarker.detectForVideo(video, performance.now());
+          const lm = res.landmarks && res.landmarks[0];
+          draw(lm, fitBox(video.videoWidth, video.videoHeight));
+          readout(lm, video.videoWidth, video.videoHeight);
+          frames++;
+          const now = performance.now();
+          if (now - fpsT > 1000) { fps = Math.round(frames * 1000 / (now - fpsT)); frames = 0; fpsT = now; }
+          if (lm) { lastSeen = now; setStatus("Tracking · " + fps + " fps · " + (delegate === "GPU" ? "GPU" : "CPU")); }
+          else if (now - lastSeen > 1500) setStatus("No person found yet. Move back so your head and shoulders are in view, with light on your face.");
+        } catch (e) {
+          console.error(e);
+          if (delegate === "GPU") {
+            recovering = true; setStatus("Graphics acceleration failed here; switching to CPU…");
+            try { await create("CPU", "VIDEO"); recovering = false; }
+            catch (e2) { setStatus("Pose detection couldn't run in this browser. Try the latest Chrome or Edge."); return; }
+          } else { setStatus("Pose detection stopped: " + (e && e.message ? e.message : "unknown error") + ". Try the latest Chrome or Edge."); return; }
+        }
       }
       raf = requestAnimationFrame(loop);
     };
@@ -1165,7 +1194,11 @@ async function sha256(data) {
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 960, height: 640 }, audio: false });
     } catch (e) {
       stream = null;
-      setStatus("Camera access was blocked. Allow the camera in your browser, or upload a photo or video instead.");
+      const why = e && e.name === "NotAllowedError" ? "Camera permission was denied. Click the camera icon in the address bar to allow it."
+        : e && e.name === "NotFoundError" ? "No camera was found on this device."
+        : e && e.name === "NotReadableError" ? "The camera is in use by another app (for example Teams or Zoom). Close it and try again."
+        : "The camera couldn't start. Allow camera access, or upload a photo or video instead.";
+      setStatus(why);
       return;
     }
     video.srcObject = stream; await video.play();

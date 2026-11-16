@@ -485,8 +485,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <div class="sec-head">
       <p class="sec-label">Current projects</p>
       <div>
-        <h2>Apps I'm building</h2>
-        <p class="sec-intro">Mobile apps that take my research and IT experience into everyday products. Each one is designed privacy-first, with processing on the device wherever possible.</p>
+        <h2>Projects I'm building</h2>
+        <p class="sec-intro">Products that take my research and IT experience into practice, from cloud services to mobile apps. Each one is designed privacy-first, with processing on the device wherever possible.</p>
       </div>
     </div>
     <div class="body-grid">
@@ -494,15 +494,28 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <div class="content projects">
 
         <article class="project featured">
-          <div class="p-top"><span class="p-kicker">Flagship · fitness &amp; injury prevention</span><span class="status-chip building">In development</span></div>
-          <h3>PoseCheck</h3>
-          <p>A gym-form coach that watches an exercise through the phone camera and gives feedback on joint angles and posture in real time. It applies the posture-error method from my published construction-safety research to strength training.</p>
-          <ul class="tags"><li>BlazePose</li><li>MediaPipe</li><li>OpenCV</li><li>JavaScript</li><li>Android → iOS</li></ul>
+          <div class="p-top"><span class="p-kicker">Flagship · cloud &amp; DevOps</span><span class="status-chip building">Live on GitHub</span></div>
+          <h3>VeriFrame</h3>
+          <p>An image-integrity service built from my PhD research. Register an original image, then check any copy: it reports whether the copy is identical, re-saved or compressed, or tampered with, and highlights the regions that changed. Every registration goes on an append-only, hash-chained ledger, so editing any past record is detected.</p>
+          <ul class="tags"><li>Python</li><li>FastAPI</li><li>Docker</li><li>GitHub Actions</li><li>Terraform</li><li>AWS ECS Fargate</li><li>DynamoDB</li><li>Kubernetes</li><li>Trivy</li></ul>
+          <div class="p-side lineage">
+            <div class="row"><span>Research</span><span>Video blockchain for evidence integrity (PhD, AUT; <em>Information</em> 2024, <em>Electronics</em> 2023)</span></div>
+            <div class="row"><span>Pipeline</span><span>Every push runs lint, tests, a dependency CVE audit, a container build and smoke test, an image security scan and a Terraform check</span></div>
+            <div class="row"><span>Cloud</span><span>Infrastructure as code for AWS: ECR, ECS Fargate, load balancer, DynamoDB and least-privilege IAM, deployed via GitHub OIDC with no stored keys</span></div>
+            <div class="btn-row"><a class="btn" href="https://github.com/KTVshwajith/Veriframe" target="_blank" rel="noopener">Code on GitHub ↗</a><a class="btn" href="https://github.com/KTVshwajith/Veriframe/actions" target="_blank" rel="noopener">CI runs ↗</a></div>
+          </div>
+        </article>
+
+        <article class="project featured">
+          <div class="p-top"><span class="p-kicker">Fitness &amp; injury prevention</span><span class="status-chip building">Live prototype</span></div>
+          <h3>GymBuddy</h3>
+          <p>A gym-form coach that watches an exercise through the phone camera, counts reps and flags poor form in real time. It applies the posture-error method from my published construction-safety research to strength training, and records sessions that coaches and physios can review.</p>
+          <ul class="tags"><li>MediaPipe Pose</li><li>BlazePose · 33 landmarks</li><li>React</li><li>Vite</li><li>Capacitor</li><li>Android</li><li>GitHub Actions</li></ul>
           <div class="p-side lineage">
             <div class="row"><span>Research</span><span>33-landmark posture-error detection for manual lifting (SASBE journal)</span></div>
-            <div class="row"><span>Prototype</span><span>Browser version: the pose demo above</span></div>
-            <div class="row"><span>Next</span><span>Native Android app, then iOS</span></div>
-            <div class="btn-row"><a class="btn" href="#pose">Try the prototype</a><a class="btn" href="https://github.com/KTVshwajith/Pose-Detection-ALL" target="_blank" rel="noopener">Code on GitHub ↗</a></div>
+            <div class="row"><span>Live now</span><span>Web app on GitHub Pages and an Android APK, both rebuilt automatically on every push</span></div>
+            <div class="row"><span>Next</span><span>Form rules for more exercises, then iOS</span></div>
+            <div class="btn-row"><a class="btn primary" href="https://ktvshwajith.github.io/GymBuddy/" target="_blank" rel="noopener">Open the live app ↗</a><a class="btn" href="https://github.com/KTVshwajith/GymBuddy/releases/latest" target="_blank" rel="noopener">Android APK ↗</a><a class="btn" href="https://github.com/KTVshwajith/GymBuddy" target="_blank" rel="noopener">Code on GitHub ↗</a></div>
           </div>
         </article>
 

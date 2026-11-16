@@ -1,0 +1,51 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="hash-functions">
+  <div class="cols">
+    <div class="field">
+      <label for="a">Message A</label>
+      <input id="a" type="text" value="Transfer $100 to Alice" />
+    </div>
+    <div class="field">
+      <label for="b">Message B (try changing one character)</label>
+      <input id="b" type="text" value="Transfer $900 to Alice" />
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Algorithm</th><th>Digest of A</th><th>Bits changed</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="hint">A good hash flips about half of its output bits when the input changes at all. That's the avalanche effect.</div>
+
+  <Fragment slot="notes">
+    <h2>Which hash should you use?</h2>
+    <ul>
+      <li><strong>SHA-256</strong> is the everyday default: TLS certificates, software downloads, Git (newer repositories), Bitcoin.</li>
+      <li><strong>SHA-384 and SHA-512</strong> give longer outputs. SHA-512 is often faster than SHA-256 on 64-bit processors.</li>
+      <li><strong>SHA-1</strong> is broken for collision resistance: researchers produced two different PDF files with the same SHA-1 digest in 2017. Don't use it for signatures or integrity checks. It's shown here for comparison.</li>
+      <li><strong>SHA-3 and BLAKE3</strong> are modern alternatives with different internal designs. Browsers don't expose them through Web Crypto yet, so they aren't in this lab.</li>
+    </ul>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, toHex, bitDiff, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  const algs = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+  async function run() {
+    const a = enc.encode($("#a").value), b = enc.encode($("#b").value);
+    const rows = await Promise.all(algs.map(async (alg) => {
+      const da = new Uint8Array(await crypto.subtle.digest(alg, a));
+      const db = new Uint8Array(await crypto.subtle.digest(alg, b));
+      const bits = da.length * 8, diff = bitDiff(da, db);
+      const pct = Math.round((diff / bits) * 100);
+      return `<tr><td>${alg}${alg === "SHA-1" ? " ⚠" : ""}<br><span class="hint">${bits}-bit</span></td><td>${toHex(da)}</td><td>${diff} / ${bits}<br><span class="hint">${pct}%</span></td></tr>`;
+    }));
+    $("#rows").innerHTML = rows.join("");
+  }
+  if (requireWebCrypto()) {
+    $("#a").addEventListener("input", run);
+    $("#b").addEventListener("input", run);
+    run();
+  }
+</script>

@@ -1,0 +1,43 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="encoding">
+  <div class="field">
+    <label for="text">Text (UTF-8)</label>
+    <textarea id="text">Kia ora — secure by design 🔐</textarea>
+  </div>
+  <div class="field">
+    <label for="hex">Hexadecimal</label>
+    <textarea id="hex"></textarea>
+  </div>
+  <div class="field">
+    <label for="b64">Base64</label>
+    <textarea id="b64"></textarea>
+  </div>
+  <div class="out" id="status">Edit any box and the other two update.</div>
+
+  <Fragment slot="notes">
+    <h2>What's going on</h2>
+    <p>Computers store text as bytes. UTF-8 turns each character into one to four bytes: plain English letters take one, while "—" takes three and the emoji takes four. Hexadecimal writes each byte as two characters (0–9, a–f). Base64 packs every three bytes into four printable characters, which is why it's used to carry binary data in email, JSON and URLs.</p>
+    <div class="article-callout"><strong>Encoding is not encryption</strong><br />Anyone can reverse hex or Base64 without a key. If you see a "secret" that is only Base64-encoded, such as an HTTP Basic Auth header or a JWT payload, treat it as readable plain text.</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, dec, toHex, fromHex, toBase64, fromBase64, show } from "../../scripts/cryptoUtils.js";
+  const text = $("#text"), hex = $("#hex"), b64 = $("#b64");
+  function fromBytes(bytes, skip) {
+    if (skip !== "text") text.value = dec.decode(bytes);
+    if (skip !== "hex") hex.value = toHex(bytes);
+    if (skip !== "b64") b64.value = toBase64(bytes);
+    show("#status", `${[...text.value].length} characters · ${bytes.length} bytes · ${hex.value.length} hex digits · ${b64.value.length} Base64 characters`, "ok");
+  }
+  text.addEventListener("input", () => fromBytes(enc.encode(text.value), "text"));
+  hex.addEventListener("input", () => {
+    try { fromBytes(fromHex(hex.value), "hex"); } catch (e) { show("#status", `Invalid hex: ${e.message}`, "bad"); }
+  });
+  b64.addEventListener("input", () => {
+    try { fromBytes(fromBase64(b64.value), "b64"); } catch { show("#status", "Invalid Base64: check for stray characters or missing padding (=).", "bad"); }
+  });
+  fromBytes(enc.encode(text.value), "text");
+</script>

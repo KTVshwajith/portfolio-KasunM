@@ -1,0 +1,92 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="classical-ciphers">
+  <div class="cols">
+    <div class="field">
+      <label for="mode">Cipher</label>
+      <select id="mode">
+        <option value="caesar">Caesar (shift)</option>
+        <option value="vigenere">Vigenère (keyword)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="key">Shift (0–25) or keyword</label>
+      <input id="key" type="text" value="7" />
+    </div>
+  </div>
+  <div class="field">
+    <label for="pt">Plaintext</label>
+    <textarea id="pt">Security is a process, not a product. Every system has weaknesses, and the attacker only needs to find one of them while the defender has to protect them all.</textarea>
+  </div>
+  <div class="field"><label>Ciphertext</label><div class="out" id="ct">—</div></div>
+  <h3>Letter frequencies in the ciphertext (light) vs typical English (dark)</h3>
+  <div class="bars" id="bars"></div>
+  <div class="bar-labels" id="labels"></div>
+  <div class="row"><button id="crack" type="button">Crack the Caesar shift by frequency analysis</button></div>
+  <div class="out" id="result">—</div>
+
+  <Fragment slot="notes">
+    <h2>Why these ciphers fail</h2>
+    <p>A Caesar cipher shifts every letter by the same amount, so the shape of the English frequency curve (lots of E, T, A, O) survives, just slid sideways. Try all 26 shifts, pick the one that best matches English, and you've broken it. That's what the crack button does, using a chi-squared score.</p>
+    <p>Vigenère uses a keyword so each letter shifts by a different amount, which flattens the frequency chart. It stood for about 300 years, until Babbage and Kasiski showed that finding the keyword length breaks it into several Caesar ciphers.</p>
+    <div class="article-callout"><strong>The modern lesson</strong><br />Good ciphers must hide all statistical patterns in the plaintext. Modern ciphers like <a class="card-link" href="../aes-gcm/">AES</a> produce output that is indistinguishable from random noise.</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, show } from "../../scripts/cryptoUtils.js";
+  const EN = [8.2, 1.5, 2.8, 4.3, 12.7, 2.2, 2.0, 6.1, 7.0, 0.15, 0.77, 4.0, 2.4, 6.7, 7.5, 1.9, 0.095, 6.0, 6.3, 9.1, 2.8, 0.98, 2.4, 0.15, 2.0, 0.074];
+  const A = 65;
+  function shiftChar(c, k) {
+    const code = c.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCharCode(((code - 65 + k + 26) % 26) + 65);
+    if (code >= 97 && code <= 122) return String.fromCharCode(((code - 97 + k + 26) % 26) + 97);
+    return c;
+  }
+  function keyShifts() {
+    const key = $("#key").value.trim();
+    if ($("#mode").value === "caesar") return [((parseInt(key, 10) || 0) % 26 + 26) % 26];
+    const letters = key.toUpperCase().replace(/[^A-Z]/g, "");
+    return letters ? [...letters].map((c) => c.charCodeAt(0) - A) : [0];
+  }
+  function encrypt(text, shifts, dir = 1) {
+    let j = 0;
+    return [...text].map((c) => /[a-z]/i.test(c) ? shiftChar(c, dir * shifts[j++ % shifts.length]) : c).join("");
+  }
+  function freqs(text) {
+    const counts = new Array(26).fill(0);
+    let n = 0;
+    for (const c of text.toUpperCase()) { const i = c.charCodeAt(0) - A; if (i >= 0 && i < 26) { counts[i]++; n++; } }
+    return counts.map((c) => (n ? (c / n) * 100 : 0));
+  }
+  function drawBars(f) {
+    const max = Math.max(...f, ...EN);
+    $("#bars").innerHTML = f.map((v, i) =>
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;align-items:end;height:100%;background:none"><div style="height:${(v / max) * 100}%"></div><div class="ref" style="height:${(EN[i] / max) * 100}%"></div></div>`).join("");
+    $("#labels").innerHTML = [...Array(26)].map((_, i) => `<span>${String.fromCharCode(A + i)}</span>`).join("");
+  }
+  function run() {
+    const ct = encrypt($("#pt").value, keyShifts());
+    show("#ct", ct);
+    drawBars(freqs(ct));
+    show("#result", "—");
+  }
+  function crack() {
+    const ct = $("#ct").textContent;
+    const f = freqs(ct);
+    const scores = [...Array(26)].map((_, s) => {
+      let chi = 0;
+      for (let i = 0; i < 26; i++) { const obs = f[(i + s) % 26], exp = EN[i]; chi += ((obs - exp) ** 2) / exp; }
+      return { s, chi };
+    }).sort((a, b) => a.chi - b.chi);
+    const best = scores[0];
+    const guess = encrypt(ct, [best.s], -1);
+    const note = $("#mode").value === "vigenere" ? "\n\n(For Vigenère, a single shift won't work. The output should still look scrambled, which shows why it resisted this attack.)" : "";
+    show("#result", `Best guess: shift ${best.s} (chi-squared ${best.chi.toFixed(1)}; next best ${scores[1].chi.toFixed(1)})\n\n${guess.slice(0, 220)}${guess.length > 220 ? "…" : ""}${note}`, $("#mode").value === "caesar" ? "ok" : undefined);
+  }
+  ["#pt", "#key"].forEach((s) => $(s).addEventListener("input", run));
+  $("#mode").addEventListener("change", () => { $("#key").value = $("#mode").value === "caesar" ? "7" : "LEMON"; run(); });
+  $("#crack").addEventListener("click", crack);
+  run();
+</script>

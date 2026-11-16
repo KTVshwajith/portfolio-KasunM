@@ -1,0 +1,89 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="jwt">
+  <div class="field">
+    <label for="token">Encoded token (header.payload.signature)</label>
+    <textarea id="token" style="min-height:100px"></textarea>
+  </div>
+  <div class="cols">
+    <div class="field"><label>Header</label><div class="out" id="header">—</div></div>
+    <div class="field"><label>Payload (claims)</label><div class="out" id="payload">—</div></div>
+  </div>
+  <div class="out" id="claims">—</div>
+  <div class="field">
+    <label for="secret">Shared secret for HS256</label>
+    <input id="secret" type="text" value="demo-secret-change-me-0123456789abcdef" />
+  </div>
+  <div class="row">
+    <button id="verify" type="button">Verify signature</button>
+    <button id="sign" type="button" class="alt">Create a new signed token</button>
+  </div>
+  <div class="out" id="result">—</div>
+
+  <Fragment slot="notes">
+    <h2>Anatomy of a JWT</h2>
+    <p>A JSON Web Token is three Base64url-encoded parts joined by dots: a <strong>header</strong> naming the algorithm, a <strong>payload</strong> of claims (who the user is, when the token expires), and a <strong>signature</strong> over the first two. The header and payload are only encoded, not encrypted, so anyone holding the token can read them.</p>
+    <h2>Try these</h2>
+    <ul>
+      <li>Change <code>"role":"student"</code> to <code>"admin"</code> in the payload of a token and verify: the signature fails.</li>
+      <li>Change the secret and verify: it also fails.</li>
+    </ul>
+    <div class="article-callout"><strong>Common mistakes</strong><br />Never put secrets or personal data in the payload. Always check <code>exp</code>, the issuer and the audience. Reject <code>"alg":"none"</code>, and use a long random secret for HS256, or asymmetric RS256/ES256 when different services verify tokens.</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, dec, toBase64Url, fromBase64Url, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  const b64json = (obj) => toBase64Url(enc.encode(JSON.stringify(obj)));
+  const hmacKey = (secret) => crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+
+  async function makeToken() {
+    const now = Math.floor(Date.now() / 1000);
+    const header = { alg: "HS256", typ: "JWT" };
+    const payload = { sub: "s1029384", name: "Demo Student", role: "student", iat: now, exp: now + 3600 };
+    const data = `${b64json(header)}.${b64json(payload)}`;
+    const sig = await crypto.subtle.sign("HMAC", await hmacKey($("#secret").value), enc.encode(data));
+    $("#token").value = `${data}.${toBase64Url(sig)}`;
+    decode();
+    show("#result", "New token signed with the secret above. It expires in one hour.", "ok");
+  }
+
+  function decode() {
+    const parts = $("#token").value.trim().split(".");
+    if (parts.length !== 3) { show("#header", "A JWT has exactly three parts separated by dots.", "bad"); return null; }
+    try {
+      const header = JSON.parse(dec.decode(fromBase64Url(parts[0])));
+      const payload = JSON.parse(dec.decode(fromBase64Url(parts[1])));
+      show("#header", JSON.stringify(header, null, 2));
+      show("#payload", JSON.stringify(payload, null, 2));
+      const notes = [];
+      if (payload.iat) notes.push(`Issued: ${new Date(payload.iat * 1000).toLocaleString()}`);
+      if (payload.exp) {
+        const expired = payload.exp * 1000 < Date.now();
+        notes.push(`Expires: ${new Date(payload.exp * 1000).toLocaleString()} ${expired ? "(EXPIRED)" : "(still valid)"}`);
+      }
+      if (String(header.alg).toLowerCase() === "none") notes.push("⚠ alg is 'none': an unsigned token. Servers must reject this.");
+      show("#claims", notes.join("\n") || "No time claims (iat/exp) in this token.", notes.some((n) => n.includes("⚠") || n.includes("EXPIRED")) ? "bad" : undefined);
+      return { parts, header };
+    } catch {
+      show("#header", "Couldn't decode: not valid Base64url JSON.", "bad");
+      return null;
+    }
+  }
+
+  async function verify() {
+    const d = decode();
+    if (!d) return;
+    if (d.header.alg !== "HS256") { show("#result", `This lab verifies HS256 only; the token says ${d.header.alg}.`, "bad"); return; }
+    const ok = await crypto.subtle.verify("HMAC", await hmacKey($("#secret").value), fromBase64Url(d.parts[2]), enc.encode(`${d.parts[0]}.${d.parts[1]}`));
+    show("#result", ok ? "✓ Signature valid: the header and payload are exactly as signed with this secret." : "✗ Signature invalid: the token was modified or signed with a different secret.", ok ? "ok" : "bad");
+  }
+
+  if (requireWebCrypto()) {
+    $("#token").addEventListener("input", decode);
+    $("#verify").addEventListener("click", verify);
+    $("#sign").addEventListener("click", makeToken);
+    makeToken();
+  }
+</script>

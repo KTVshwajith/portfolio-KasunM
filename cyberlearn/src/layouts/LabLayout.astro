@@ -1,0 +1,41 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { labs } from "../data/labs.js";
+
+// Props: slug (matches labs.js), plus optional `notes` slot for explanation below the lab.
+const { slug } = Astro.props;
+const lab = labs.find((l) => l.slug === slug);
+const base = import.meta.env.BASE_URL;
+const siblings = labs.filter((l) => l.section === lab.section && l.slug !== slug);
+---
+<BaseLayout title={lab.title} description={lab.desc}>
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumb"><a href={`${base}labs/`}>LABS</a> / {lab.section.toUpperCase()}</div>
+    <h1>{lab.title}</h1>
+    <p>{lab.desc}</p>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><span class="pill">{lab.tag}</span><span class="pill">Runs in your browser · nothing is uploaded</span></div>
+  </div></section>
+  <section class="section"><div class="container">
+    <div class="content-layout">
+      <div>
+        <div class="lab-box lab">
+          <slot />
+        </div>
+        <div class="article" style="margin-top:22px">
+          <slot name="notes" />
+        </div>
+      </div>
+      <aside class="sidebar">
+        <div class="content-card">
+          <h3>More in {lab.section}</h3>
+          {siblings.length ? siblings.map((s) => <a href={`${base}labs/${s.slug}/`}>{s.title} →</a>) : <p class="muted" style="font-size:12px">More labs in this topic are on the way.</p>}
+          <a href={`${base}labs/`}>All labs →</a>
+        </div>
+        <div class="content-card">
+          <h3>Safe practice</h3>
+          <p class="muted" style="font-size:12px">These labs are for learning. Don't paste real passwords, private keys or production tokens into any website, including this one.</p>
+        </div>
+      </aside>
+    </div>
+  </div></section>
+</BaseLayout>

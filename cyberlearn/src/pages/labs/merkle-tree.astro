@@ -1,0 +1,90 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="merkle-tree">
+  <div class="field">
+    <label for="items">Records, one per line (2–16)</label>
+    <textarea id="items" style="min-height:130px">Frame 001 · camera A · 09:00:00
+Frame 002 · camera A · 09:00:01
+Frame 003 · camera A · 09:00:02
+Frame 004 · camera A · 09:00:03
+Frame 005 · camera A · 09:00:04</textarea>
+  </div>
+  <div class="cols">
+    <div class="field">
+      <label for="pick">Prove that this record is included</label>
+      <select id="pick"></select>
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button id="build" type="button">Build tree</button>
+    </div>
+  </div>
+  <div class="tree" id="tree"></div>
+  <div class="hint">Highlighted: the path from your record to the root. Gold outline: the sibling hashes that make up the proof.</div>
+  <div class="out" id="proof">—</div>
+
+  <Fragment slot="notes">
+    <h2>Why Merkle trees matter</h2>
+    <p>Each record is hashed into a leaf. Pairs of hashes are hashed together, level by level, until one <strong>root</strong> hash remains. Change any record and the root changes.</p>
+    <p>The clever part is the <strong>inclusion proof</strong>. To show one record belongs to a set of a million, you only need about 20 sibling hashes (log₂ of a million), not the whole set. Bitcoin uses this for lightweight wallets, Certificate Transparency logs use it to prove a TLS certificate was published, and my PhD research used it to verify individual video frames without re-hashing the whole recording.</p>
+    <div class="article-callout"><strong>Detail</strong><br />When a level has an odd number of nodes, this lab carries the last one up unchanged. Bitcoin instead duplicates it, a choice that later caused a known vulnerability (CVE-2012-2459).</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, toHex, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  const H = async (bytes) => new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  const cat = (a, b) => { const c = new Uint8Array(a.length + b.length); c.set(a); c.set(b, a.length); return c; };
+  const short = (h) => toHex(h).slice(0, 10);
+
+  function items() { return $("#items").value.split("\n").map((s) => s.trim()).filter(Boolean).slice(0, 16); }
+
+  function fillPick() {
+    const list = items(), prev = $("#pick").value;
+    $("#pick").innerHTML = list.map((t, i) => `<option value="${i}">${i + 1}. ${t.replace(/</g, "&lt;")}</option>`).join("");
+    if (prev && Number(prev) < list.length) $("#pick").value = prev;
+  }
+
+  async function build() {
+    const list = items();
+    if (list.length < 2) { show("#proof", "Enter at least two records.", "bad"); return; }
+    // Domain-separate leaves (0x00) and internal nodes (0x01), as RFC 6962 does.
+    const levels = [await Promise.all(list.map((t) => H(cat(new Uint8Array([0]), enc.encode(t)))))];
+    while (levels.at(-1).length > 1) {
+      const cur = levels.at(-1), next = [];
+      for (let i = 0; i < cur.length; i += 2) {
+        next.push(i + 1 < cur.length ? await H(cat(cat(new Uint8Array([1]), cur[i]), cur[i + 1])) : cur[i]);
+      }
+      levels.push(next);
+    }
+    // Proof for the chosen leaf
+    let idx = Number($("#pick").value || 0);
+    const pathIdx = [], sibIdx = [], proof = [];
+    for (let l = 0; l < levels.length - 1; l++) {
+      pathIdx.push(idx);
+      const sib = idx ^ 1;
+      if (sib < levels[l].length) { sibIdx.push(sib); proof.push({ side: sib < idx ? "left" : "right", hash: levels[l][sib] }); }
+      else sibIdx.push(-1);
+      idx = Math.floor(idx / 2);
+    }
+    pathIdx.push(0);
+    $("#tree").innerHTML = levels.slice().reverse().map((lvl, ri) => {
+      const l = levels.length - 1 - ri;
+      return `<div class="level">${lvl.map((h, i) => `<span class="node ${pathIdx[l] === i ? "path" : ""} ${sibIdx[l] === i ? "sib" : ""}">${l === levels.length - 1 ? "ROOT " : ""}${short(h)}</span>`).join("")}</div>`;
+    }).join("");
+    // Verify the proof independently
+    let acc = levels[0][Number($("#pick").value || 0)];
+    for (const p of proof) acc = await H(p.side === "left" ? cat(cat(new Uint8Array([1]), p.hash), acc) : cat(cat(new Uint8Array([1]), acc), p.hash));
+    const root = levels.at(-1)[0];
+    const ok = toHex(acc) === toHex(root);
+    show("#proof", `Root: ${toHex(root)}\n\nProof for record ${Number($("#pick").value) + 1}: ${proof.length} sibling hash${proof.length === 1 ? "" : "es"} (out of ${list.length} records)\n${proof.map((p, i) => `  ${i + 1}. ${p.side.padEnd(5)} ${toHex(p.hash)}`).join("\n")}\n\n${ok ? "✓ Recomputed root matches: the record is in the set." : "✗ Proof failed."}`, ok ? "ok" : "bad");
+  }
+
+  if (requireWebCrypto()) {
+    $("#items").addEventListener("input", () => { fillPick(); build(); });
+    $("#pick").addEventListener("change", build);
+    $("#build").addEventListener("click", build);
+    fillPick(); build();
+  }
+</script>

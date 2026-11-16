@@ -1,0 +1,71 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="rsa-oaep">
+  <div class="row">
+    <button id="gen" type="button">Generate RSA-2048 key pair</button>
+    <span class="hint" id="genstatus"></span>
+  </div>
+  <div class="cols">
+    <div class="field"><label>Public key (share freely), JWK</label><div class="out" id="pub">—</div></div>
+    <div class="field"><label>Private key (keep secret), modulus hidden</label><div class="out" id="priv">—</div></div>
+  </div>
+  <div class="field">
+    <label for="msg">Message to encrypt (max 190 bytes with RSA-2048 + OAEP-SHA256)</label>
+    <input id="msg" type="text" value="Meet at the library at 3pm" />
+  </div>
+  <div class="row"><button id="enc" type="button">Encrypt with public key</button></div>
+  <div class="out" id="ct">—</div>
+  <div class="row"><button id="decb" type="button">Decrypt with private key</button></div>
+  <div class="out" id="pt">—</div>
+
+  <Fragment slot="notes">
+    <h2>What to notice</h2>
+    <ul>
+      <li>Key generation takes a moment: the browser is searching for two large random primes.</li>
+      <li>The ciphertext is always 256 bytes (2048 bits), however short the message, and it changes every time because OAEP adds randomness.</li>
+      <li>RSA can only encrypt short messages. Real systems encrypt a random AES key with RSA and the data with AES. This is called hybrid encryption.</li>
+    </ul>
+    <div class="article-callout"><strong>Where RSA stands today</strong><br />RSA is still widely used for signatures and certificates, but new protocols prefer elliptic-curve key exchange (see the <a class="card-link" href="../ecdh/">ECDH lab</a>). Both RSA and ECC will be broken by a large enough quantum computer, which is why NIST published post-quantum standards (ML-KEM, ML-DSA) in 2024.</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, dec, toBase64, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  let pair, ct;
+  async function gen() {
+    $("#gen").disabled = true; $("#genstatus").textContent = "Generating…";
+    const t0 = performance.now();
+    pair = await crypto.subtle.generateKey(
+      { name: "RSA-OAEP", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" },
+      true, ["encrypt", "decrypt"]);
+    const pub = await crypto.subtle.exportKey("jwk", pair.publicKey);
+    const priv = await crypto.subtle.exportKey("jwk", pair.privateKey);
+    $("#pub").textContent = JSON.stringify({ kty: pub.kty, e: pub.e, n: pub.n.slice(0, 48) + "…" }, null, 1);
+    $("#priv").textContent = JSON.stringify({ kty: priv.kty, d: priv.d.slice(0, 24) + "…", p: priv.p.slice(0, 24) + "…", q: priv.q.slice(0, 24) + "…" }, null, 1);
+    $("#genstatus").textContent = `Done in ${(performance.now() - t0).toFixed(0)} ms`;
+    $("#gen").disabled = false;
+    show("#ct", "—"); show("#pt", "—");
+  }
+  async function encrypt() {
+    if (!pair) await gen();
+    try {
+      ct = await crypto.subtle.encrypt({ name: "RSA-OAEP" }, pair.publicKey, enc.encode($("#msg").value));
+      show("#ct", `${ct.byteLength}-byte ciphertext (Base64):\n${toBase64(ct)}`);
+      show("#pt", "—");
+    } catch {
+      show("#ct", "Message too long for a single RSA-OAEP block. Real systems use hybrid encryption.", "bad");
+    }
+  }
+  async function decrypt() {
+    if (!ct) return;
+    const pt = await crypto.subtle.decrypt({ name: "RSA-OAEP" }, pair.privateKey, ct);
+    show("#pt", `✓ ${dec.decode(pt)}`, "ok");
+  }
+  if (requireWebCrypto()) {
+    $("#gen").addEventListener("click", gen);
+    $("#enc").addEventListener("click", encrypt);
+    $("#decb").addEventListener("click", decrypt);
+    gen();
+  }
+</script>

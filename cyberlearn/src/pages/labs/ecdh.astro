@@ -1,0 +1,70 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="ecdh">
+  <div class="field">
+    <label for="curve">Curve</label>
+    <select id="curve">
+      <option value="P-256">P-256 (NIST)</option>
+      <option value="X25519">X25519 (used by most TLS 1.3 connections)</option>
+    </select>
+  </div>
+  <div class="row"><button id="run" type="button">Run the key exchange</button></div>
+  <div class="cols">
+    <div class="field">
+      <h3>Alice</h3>
+      <div class="out" id="alice">—</div>
+    </div>
+    <div class="field">
+      <h3>Bob</h3>
+      <div class="out" id="bob">—</div>
+    </div>
+  </div>
+  <div class="field">
+    <h3>What an eavesdropper sees</h3>
+    <div class="out" id="eve">—</div>
+  </div>
+  <div class="out" id="result">—</div>
+
+  <Fragment slot="notes">
+    <h2>How it works</h2>
+    <p>Alice and Bob each generate a private key and send only their public keys across the network. Each combines their <em>own private key</em> with the <em>other's public key</em>, and the mathematics of elliptic curves guarantees they arrive at the same shared secret. An eavesdropper who sees both public keys can't compute it.</p>
+    <p>The shared secret is then fed into a key-derivation function (HKDF) to produce the actual encryption keys. This lab shows that step too.</p>
+    <div class="article-callout"><strong>Forward secrecy</strong><br />TLS 1.3 generates fresh ephemeral key pairs for every connection, so stealing a server's long-term key later can't decrypt past traffic. Chrome and other major browsers now also combine X25519 with the post-quantum ML-KEM in a hybrid key exchange (X25519MLKEM768).</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, toHex, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  async function run() {
+    const curve = $("#curve").value;
+    const alg = curve === "X25519" ? { name: "X25519" } : { name: "ECDH", namedCurve: "P-256" };
+    let a, b;
+    try {
+      a = await crypto.subtle.generateKey(alg, true, ["deriveBits"]);
+      b = await crypto.subtle.generateKey(alg, true, ["deriveBits"]);
+    } catch {
+      show("#result", `${curve} isn't supported by this browser yet. Choose P-256 instead.`, "bad");
+      return;
+    }
+    const aPub = toHex(await crypto.subtle.exportKey("raw", a.publicKey));
+    const bPub = toHex(await crypto.subtle.exportKey("raw", b.publicKey));
+    const bitsLen = curve === "X25519" ? 256 : 256;
+    const aShared = new Uint8Array(await crypto.subtle.deriveBits({ name: alg.name, public: b.publicKey }, a.privateKey, bitsLen));
+    const bShared = new Uint8Array(await crypto.subtle.deriveBits({ name: alg.name, public: a.publicKey }, b.privateKey, bitsLen));
+    const hkdfKey = await crypto.subtle.importKey("raw", aShared, "HKDF", false, ["deriveBits"]);
+    const aesKey = await crypto.subtle.deriveBits({ name: "HKDF", hash: "SHA-256", salt: new Uint8Array(32), info: enc.encode("cyberlearn demo AES-256 key") }, hkdfKey, 256);
+    $("#alice").textContent = `Private key: (never leaves Alice)\nPublic key sent to Bob:\n${aPub}\n\nShared secret computed:\n${toHex(aShared)}`;
+    $("#bob").textContent = `Private key: (never leaves Bob)\nPublic key sent to Alice:\n${bPub}\n\nShared secret computed:\n${toHex(bShared)}`;
+    $("#eve").textContent = `Alice → Bob: ${aPub.slice(0, 40)}…\nBob → Alice: ${bPub.slice(0, 40)}…\n(the shared secret never crosses the network)`;
+    const same = toHex(aShared) === toHex(bShared);
+    show("#result", same
+      ? `✓ Both sides derived the same secret. HKDF-SHA256 turns it into an AES-256 key:\n${toHex(aesKey)}`
+      : "✗ Secrets differ (this should never happen).", same ? "ok" : "bad");
+  }
+  if (requireWebCrypto()) {
+    $("#run").addEventListener("click", run);
+    $("#curve").addEventListener("change", run);
+    run();
+  }
+</script>

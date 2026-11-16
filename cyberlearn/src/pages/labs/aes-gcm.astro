@@ -1,0 +1,83 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="aes-gcm">
+  <div class="field">
+    <label for="pt">Plaintext</label>
+    <textarea id="pt">Patient record #2231: appointment confirmed for Tuesday.</textarea>
+  </div>
+  <div class="row">
+    <button id="newkey" type="button" class="alt">New random 256-bit key</button>
+    <button id="encrypt" type="button">Encrypt</button>
+  </div>
+  <table>
+    <tbody>
+      <tr><th>Key</th><td id="key">—</td></tr>
+      <tr><th>IV / nonce (96-bit)</th><td id="iv">—</td></tr>
+    </tbody>
+  </table>
+  <div class="field">
+    <label for="ct">Ciphertext + 128-bit authentication tag (hex). Edit it, or use the button below.</label>
+    <textarea id="ct"></textarea>
+  </div>
+  <div class="row">
+    <button id="tamper" type="button" class="alt">Flip one bit</button>
+    <button id="decrypt" type="button">Decrypt</button>
+  </div>
+  <div class="out" id="result">Encrypt something first.</div>
+
+  <Fragment slot="notes">
+    <h2>What to notice</h2>
+    <ul>
+      <li>Encrypt the same text twice and you get a different ciphertext each time, because a new random IV (nonce) is used. Identical messages don't leak as identical ciphertexts.</li>
+      <li>The ciphertext is 16 bytes longer than the plaintext. Those 16 bytes are the authentication tag.</li>
+      <li>Change even one bit and decryption fails outright. GCM is an <em>authenticated</em> mode: it detects tampering instead of quietly returning garbage.</li>
+    </ul>
+    <div class="article-callout"><strong>The one rule you must not break</strong><br />Never reuse an IV with the same key in GCM. Reuse can reveal the XOR of two plaintexts and let an attacker forge tags. Generate a fresh random 96-bit IV for every message, as this lab does.</div>
+    <p>AES-GCM (and ChaCha20-Poly1305 on devices without AES hardware) protects almost all HTTPS traffic under TLS 1.3, and it is the default for encryption at rest in AWS, Azure and Google Cloud key-management services.</p>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, dec, toHex, fromHex, randomBytes, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  let key, rawKey, iv;
+  async function newKey() {
+    rawKey = randomBytes(32);
+    key = await crypto.subtle.importKey("raw", rawKey, "AES-GCM", false, ["encrypt", "decrypt"]);
+    $("#key").textContent = toHex(rawKey);
+    $("#ct").value = ""; $("#iv").textContent = "—";
+    show("#result", "New key created. Encrypt again.");
+  }
+  async function encrypt() {
+    if (!key) await newKey();
+    iv = randomBytes(12);
+    const pt = enc.encode($("#pt").value);
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, pt);
+    $("#iv").textContent = toHex(iv);
+    $("#ct").value = toHex(ct);
+    show("#result", `Encrypted ${pt.length} bytes → ${ct.byteLength} bytes (${pt.length} ciphertext + 16 tag).`);
+  }
+  function tamper() {
+    const bytes = fromHex($("#ct").value);
+    if (!bytes.length) return;
+    const i = Math.floor(Math.random() * bytes.length);
+    bytes[i] ^= 1 << Math.floor(Math.random() * 8);
+    $("#ct").value = toHex(bytes);
+    show("#result", `Flipped one bit in byte ${i}. Now try to decrypt.`);
+  }
+  async function decrypt() {
+    try {
+      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, fromHex($("#ct").value));
+      show("#result", `✓ Authentic. Decrypted:\n${dec.decode(pt)}`, "ok");
+    } catch {
+      show("#result", "✗ Decryption refused: the authentication tag doesn't match. The ciphertext, IV or key was altered.", "bad");
+    }
+  }
+  if (requireWebCrypto()) {
+    $("#newkey").addEventListener("click", newKey);
+    $("#encrypt").addEventListener("click", encrypt);
+    $("#tamper").addEventListener("click", tamper);
+    $("#decrypt").addEventListener("click", decrypt);
+    newKey().then(encrypt);
+  }
+</script>

@@ -1,71 +1,38 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import LabLayout from "../../layouts/LabLayout.astro";
 ---
-<BaseLayout title="SHA-256 Interactive Laboratory">
-  <section class="page-hero"><div class="container">
-    <div class="breadcrumb">LABS / CRYPTOGRAPHY</div>
-    <h1>SHA-256 Hashing Laboratory</h1>
-    <p>Calculate a real SHA-256 digest using the browser's Web Crypto API. Your input stays in your browser.</p>
-  </div></section>
-  <section class="section"><div class="container" style="max-width:850px">
-    <div class="content-card">
-      <div class="kicker">Experiment 01 / Cryptographic hashing</div>
-      <h2>Generate a SHA-256 digest</h2>
-      <p class="muted">Enter a message below. The laboratory converts it to UTF-8 bytes and calculates its SHA-256 digest.</p>
-      <div class="lab-box">
-        <label for="hash-input">Your input message</label>
-        <input id="hash-input" type="text" value="Hello CyberLearn Lab" placeholder="Type a message..." />
-        <button id="hash-button" type="button">Calculate SHA-256</button>
-        <div id="hash-output" class="hash-output" aria-live="polite">Your digest will appear here.</div>
-        <div id="hash-status" style="font-size:11px;color:#a9c4dc;margin-top:9px">Ready to calculate.</div>
-      </div>
-      <h2>What to observe</h2>
-      <ul>
-        <li>The output is always 256 bits (64 hexadecimal characters).</li>
-        <li>The same input produces the same digest.</li>
-        <li>A small input change produces a very different-looking digest.</li>
-        <li>Hashing is not encryption and cannot be reversed with a key.</li>
-      </ul>
-      <div class="article-callout"><strong>Security note</strong><br />Do not use plain SHA-256 as a password-storage scheme. Use a dedicated password hashing algorithm such as Argon2id, scrypt or bcrypt.</div>
-      <p class="muted" style="font-size:12px">Implementation: Web Crypto API · SHA-256 · Client-side only</p>
-    </div>
-  </div></section>
-  <script>
-    const input = document.querySelector("#hash-input");
-    const button = document.querySelector("#hash-button");
-    const output = document.querySelector("#hash-output");
-    const status = document.querySelector("#hash-status");
-    const toHex = (buffer) => [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, "0")).join("");
-    async function calculate() {
-      const value = input?.value ?? "";
-      if (!value.length) {
-        if (output) output.textContent = "Please enter a message first.";
-        if (status) status.textContent = "No input provided.";
-        return;
-      }
-      if (!globalThis.crypto?.subtle) {
-        if (output) output.textContent = "Web Crypto API is not available in this browser context.";
-        if (status) status.textContent = "Try a modern browser over HTTPS.";
-        return;
-      }
-      if (button) button.disabled = true;
-      if (status) status.textContent = "Calculating…";
-      try {
-        const bytes = new TextEncoder().encode(value);
-        const digest = await crypto.subtle.digest("SHA-256", bytes);
-        if (output) output.textContent = toHex(digest);
-        if (status) status.textContent = `Success · ${bytes.length} UTF-8 bytes · 256-bit digest`;
-      } catch (error) {
-        if (output) output.textContent = "Could not calculate the digest.";
-        if (status) status.textContent = "The browser reported an error.";
-      } finally {
-        if (button) button.disabled = false;
-      }
-    }
-    button?.addEventListener("click", calculate);
-    input?.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") calculate();
-    });
-    calculate();
-  </script>
-</BaseLayout>
+<LabLayout slug="sha-256">
+  <div class="field">
+    <label for="msg">Your message</label>
+    <input id="msg" type="text" value="Hello CyberLearn Lab" />
+  </div>
+  <div class="row"><button id="go" type="button">Calculate SHA-256</button></div>
+  <div class="out" id="out" aria-live="polite">Your digest will appear here.</div>
+  <div class="hint" id="status">Updates as you type.</div>
+
+  <Fragment slot="notes">
+    <h2>What to notice</h2>
+    <ul>
+      <li>The output is always 256 bits, shown as 64 hexadecimal characters, whatever the input length.</li>
+      <li>The same input always gives the same digest. Change one character and the digest looks completely different.</li>
+      <li>There is no key, and no way to "decrypt" a digest back to the message.</li>
+    </ul>
+    <div class="article-callout"><strong>Security note</strong><br />Never store passwords as plain SHA-256 digests. Use a slow, salted password-hashing scheme such as Argon2id, scrypt, bcrypt or PBKDF2 (see the <a class="card-link" href="../password-hashing/">PBKDF2 lab</a>).</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, toHex, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  async function run() {
+    const value = $("#msg").value;
+    const bytes = enc.encode(value);
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    show("#out", toHex(digest));
+    show("#status", `${bytes.length} UTF-8 bytes in · 256-bit digest out`);
+  }
+  if (requireWebCrypto()) {
+    $("#go").addEventListener("click", run);
+    $("#msg").addEventListener("input", run);
+    run();
+  }
+</script>

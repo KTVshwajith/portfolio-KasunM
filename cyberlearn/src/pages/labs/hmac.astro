@@ -1,0 +1,57 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="hmac">
+  <div class="field">
+    <label for="key">Shared secret key</label>
+    <input id="key" type="text" value="correct-horse-battery-staple" />
+  </div>
+  <div class="field">
+    <label for="msg">Message</label>
+    <textarea id="msg" set:text={'{"order": 1042, "amount": 59.90, "currency": "NZD"}'}></textarea>
+  </div>
+  <div class="row"><button id="sign" type="button">Create HMAC tag</button></div>
+  <div class="out" id="tag">Tag will appear here.</div>
+  <h3>Receiver: verify</h3>
+  <div class="field">
+    <label for="msg2">Message as received (edit it to simulate tampering)</label>
+    <textarea id="msg2"></textarea>
+  </div>
+  <div class="field">
+    <label for="key2">Receiver's key</label>
+    <input id="key2" type="text" value="correct-horse-battery-staple" />
+  </div>
+  <div class="row"><button id="verify" type="button">Verify</button></div>
+  <div class="out" id="result">Not verified yet.</div>
+
+  <Fragment slot="notes">
+    <h2>Why not just send a hash?</h2>
+    <p>An attacker who changes a message can also recompute a plain hash of the new message. An HMAC mixes a secret key into the hash, so only someone holding the key can produce a valid tag. HMAC is used to sign webhooks (Stripe, GitHub), API requests (AWS Signature V4), JWTs with HS256, and session cookies.</p>
+    <div class="article-callout"><strong>Limitation</strong><br />Both sides share the same key, so an HMAC proves the message came from someone with the key, not which one of them. To prove who signed something, use a <a class="card-link" href="../digital-signatures/">digital signature</a>.</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, toHex, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  const importKey = (secret) =>
+    crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+  let tag = null;
+  async function sign() {
+    const key = await importKey($("#key").value);
+    tag = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode($("#msg").value)));
+    show("#tag", `HMAC-SHA256 tag: ${toHex(tag)}`);
+    $("#msg2").value = $("#msg").value;
+    show("#result", "Tag created. Now verify, or edit the received message first.");
+  }
+  async function verify() {
+    if (!tag) await sign();
+    const key = await importKey($("#key2").value);
+    const ok = await crypto.subtle.verify("HMAC", key, tag, enc.encode($("#msg2").value));
+    show("#result", ok ? "✓ Valid: the message is unchanged and was tagged with the same key." : "✗ Invalid: the message was altered or the keys don't match. Reject it.", ok ? "ok" : "bad");
+  }
+  if (requireWebCrypto()) {
+    $("#sign").addEventListener("click", sign);
+    $("#verify").addEventListener("click", verify);
+    sign();
+  }
+</script>

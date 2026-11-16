@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { tutorials } from "../../data/tutorials.js";
 import { categories } from "../../data/categories.js";
+import { labs } from "../../data/labs.js";
 
 export function getStaticPaths() {
   return tutorials.map((tutorial) => ({ params: { slug: tutorial.slug }, props: { tutorial } }));
@@ -9,6 +10,7 @@ export function getStaticPaths() {
 const { tutorial } = Astro.props;
 const category = categories.find((item) => item.slug === tutorial.category);
 const base = import.meta.env.BASE_URL;
+const related = (tutorial.labs ?? []).map((s) => labs.find((l) => l.slug === s)).filter(Boolean);
 ---
 <BaseLayout title={tutorial.title} description={tutorial.summary}>
   <section class="page-hero"><div class="container">
@@ -22,6 +24,7 @@ const base = import.meta.env.BASE_URL;
       <p class="lead">{tutorial.intro}</p>
       {tutorial.sections.map((section, index) => <section id={`section-${index}`}><h2>{section.heading}</h2><p>{section.body}</p></section>)}
       <div class="article-callout" id="takeaway"><strong>Key takeaway</strong><br />{tutorial.takeaway}</div>
+      {related.length > 0 && <div class="article-callout"><strong>Try it yourself</strong><br />{related.map((l, i) => <>{i > 0 && " · "}<a class="card-link" href={`${base}labs/${l.slug}/`}>{l.title} lab →</a></>)}</div>}
       <h2>Test your understanding</h2>
       <p>{tutorial.exercise}</p>
       <div style="margin-top:28px"><a class="card-link" href={`${base}categories/${tutorial.category}/`}>← Back to {category?.title}</a></div>
@@ -35,12 +38,10 @@ const base = import.meta.env.BASE_URL;
       </div>
       <div class="content-card">
         <h3>Keep learning</h3>
+        {related.map((l) => <a href={`${base}labs/${l.slug}/`}>Lab: {l.title} →</a>)}
         <a href={`${base}tutorials/`}>All tutorials →</a>
         <a href={`${base}labs/`}>Interactive labs →</a>
       </div>
     </aside>
   </div></section>
-  <script>
-    // The article content is static and accessible without JavaScript.
-  </script>
 </BaseLayout>

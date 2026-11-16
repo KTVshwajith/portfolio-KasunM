@@ -3,12 +3,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import TutorialCard from "../../components/TutorialCard.astro";
 import { categories } from "../../data/categories.js";
 import { tutorials } from "../../data/tutorials.js";
+import { labs } from "../../data/labs.js";
 
 export function getStaticPaths() {
   return categories.map((category) => ({ params: { slug: category.slug }, props: { category } }));
 }
 const { category } = Astro.props;
 const related = tutorials.filter((tutorial) => tutorial.category === category.slug);
+const relatedLabs = labs.filter((lab) => lab.category === category.slug);
+const base = import.meta.env.BASE_URL;
 ---
 <BaseLayout title={category.title} description={category.description}>
   <section class="page-hero"><div class="container">
@@ -28,6 +31,7 @@ const related = tutorials.filter((tutorial) => tutorial.category === category.sl
         <div class="kicker" style="margin-top:34px">Study materials</div>
         <h2>Related tutorials</h2>
         {related.length > 0 ? <div class="tutorial-grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:20px">{related.map((tutorial) => <TutorialCard tutorial={tutorial} />)}</div> : <div class="empty-state" style="margin-top:18px">Tutorials for this learning area are being prepared. New material will be added progressively.</div>}
+        {relatedLabs.length > 0 && <><div class="kicker" style="margin-top:34px">Hands-on</div><h2>Related labs</h2><div class="lab-list" style="margin-top:20px">{relatedLabs.map((lab) => <a href={`${base}labs/${lab.slug}/`}><b>{lab.title}</b><span class="pill">{lab.tag}</span><span class="desc">{lab.desc}</span></a>)}</div></>}
       </div>
       <aside class="sidebar">
         <div class="content-card">

@@ -1,0 +1,79 @@
+---
+import LabLayout from "../../layouts/LabLayout.astro";
+---
+<LabLayout slug="digital-signatures">
+  <div class="field">
+    <label for="alg">Algorithm</label>
+    <select id="alg">
+      <option value="ECDSA">ECDSA with P-256 and SHA-256</option>
+      <option value="Ed25519">Ed25519</option>
+      <option value="RSA-PSS">RSA-PSS (2048-bit) with SHA-256</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="msg">Message the signer approves</label>
+    <textarea id="msg">I approve release v2.4.1 of the CyberLearn mobile app.</textarea>
+  </div>
+  <div class="row"><button id="sign" type="button">Generate keys and sign</button></div>
+  <table>
+    <tbody>
+      <tr><th>Public key</th><td id="pub">—</td></tr>
+      <tr><th>Signature</th><td id="sig">—</td></tr>
+    </tbody>
+  </table>
+  <h3>Anyone can verify with the public key</h3>
+  <div class="field">
+    <label for="msg2">Message as received (edit to simulate tampering)</label>
+    <textarea id="msg2"></textarea>
+  </div>
+  <div class="row"><button id="verify" type="button">Verify signature</button></div>
+  <div class="out" id="result">—</div>
+
+  <Fragment slot="notes">
+    <h2>Signatures vs HMAC</h2>
+    <p>With a digital signature, only the private-key holder can sign, but anyone with the public key can verify. That gives you integrity <em>and</em> proof of origin (non-repudiation), which a shared-key <a class="card-link" href="../hmac/">HMAC</a> cannot.</p>
+    <h2>The three algorithms</h2>
+    <ul>
+      <li><strong>ECDSA P-256:</strong> the most common choice in TLS certificates, passkeys/WebAuthn and Apple/Google mobile security.</li>
+      <li><strong>Ed25519:</strong> a modern, fast design with deterministic signatures. It's used by SSH keys, Signal, and package signing such as Sigstore. Current versions of Chrome, Firefox and Safari support it; older browsers may not.</li>
+      <li><strong>RSA-PSS:</strong> the modern padding for RSA signatures. Keys and signatures are much larger.</li>
+    </ul>
+    <div class="article-callout"><strong>Looking ahead</strong><br />NIST's post-quantum signature standard ML-DSA (FIPS 204, 2024) is designed to replace these once quantum computers become a real threat. Its public keys and signatures are larger still.</div>
+  </Fragment>
+</LabLayout>
+
+<script>
+  import { $, enc, toHex, toBase64, show, requireWebCrypto } from "../../scripts/cryptoUtils.js";
+  const params = {
+    ECDSA: { gen: { name: "ECDSA", namedCurve: "P-256" }, sign: { name: "ECDSA", hash: "SHA-256" } },
+    Ed25519: { gen: { name: "Ed25519" }, sign: { name: "Ed25519" } },
+    "RSA-PSS": { gen: { name: "RSA-PSS", modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" }, sign: { name: "RSA-PSS", saltLength: 32 } }
+  };
+  let pair, sig, alg;
+  async function sign() {
+    alg = $("#alg").value;
+    try {
+      pair = await crypto.subtle.generateKey(params[alg].gen, true, ["sign", "verify"]);
+    } catch {
+      show("#result", `${alg} isn't supported by this browser yet. Try ECDSA, or update your browser.`, "bad");
+      return;
+    }
+    const pub = new Uint8Array(await crypto.subtle.exportKey("spki", pair.publicKey));
+    sig = new Uint8Array(await crypto.subtle.sign(params[alg].sign, pair.privateKey, enc.encode($("#msg").value)));
+    $("#pub").textContent = `${pub.length} bytes (SPKI): ${toBase64(pub).slice(0, 90)}${pub.length > 66 ? "…" : ""}`;
+    $("#sig").textContent = `${sig.length} bytes: ${toHex(sig)}`;
+    $("#msg2").value = $("#msg").value;
+    show("#result", "Signed. Now verify, or edit the received message first.");
+  }
+  async function verify() {
+    if (!sig) await sign();
+    const ok = await crypto.subtle.verify(params[alg].sign, pair.publicKey, sig, enc.encode($("#msg2").value));
+    show("#result", ok ? "✓ Valid signature: this exact message was signed by the private-key holder." : "✗ Invalid signature: the message differs from what was signed.", ok ? "ok" : "bad");
+  }
+  if (requireWebCrypto()) {
+    $("#sign").addEventListener("click", sign);
+    $("#alg").addEventListener("change", sign);
+    $("#verify").addEventListener("click", verify);
+    sign();
+  }
+</script>

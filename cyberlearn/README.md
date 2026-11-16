@@ -1,6 +1,6 @@
 # CyberLearn Lab
 
-An independent educational platform by Kasun Tharaka, focused on cybersecurity, cryptography, AI, blockchain and digital forensics.
+An independent educational platform by Dr Kasun Moolikagedara, focused on cybersecurity, cryptography, AI, blockchain and digital forensics.
 
 ## Requirements
 
@@ -47,7 +47,8 @@ public/
 ## Editing content
 
 - Add or edit learning categories in `src/data/categories.js`.
-- Add tutorials in `src/data/tutorials.js`.
+- Add tutorials in `src/data/tutorials.js` (list related lab slugs in `labs`).
+- Register labs in `src/data/labs.js` and add a page in `src/pages/labs/<slug>.astro` using `LabLayout`.
 - Add the category slug to a tutorial's `category` field.
 - Tutorials are generated as individual static pages automatically.
 

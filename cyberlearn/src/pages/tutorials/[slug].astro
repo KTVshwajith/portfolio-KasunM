@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { tutorials } from "../../data/tutorials.js";
+import { categories } from "../../data/categories.js";
+
+export function getStaticPaths() {
+  return tutorials.map((tutorial) => ({ params: { slug: tutorial.slug }, props: { tutorial } }));
+}
+const { tutorial } = Astro.props;
+const category = categories.find((item) => item.slug === tutorial.category);
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title={tutorial.title} description={tutorial.summary}>
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumb"><a href={`${base}learning/`}>LEARNING HUB</a> / <a href={`${base}categories/${tutorial.category}/`}>{category?.title.toUpperCase()}</a></div>
+    <h1>{tutorial.title}</h1>
+    <p>{tutorial.summary}</p>
+    <div style="display:flex;gap:10px;margin-top:18px"><span class="pill">{tutorial.level}</span><span class="pill">{tutorial.time} read</span></div>
+  </div></section>
+  <section class="section"><div class="container content-layout">
+    <article class="article">
+      <p class="lead">{tutorial.intro}</p>
+      {tutorial.sections.map((section, index) => <section id={`section-${index}`}><h2>{section.heading}</h2><p>{section.body}</p></section>)}
+      <div class="article-callout" id="takeaway"><strong>Key takeaway</strong><br />{tutorial.takeaway}</div>
+      <h2>Test your understanding</h2>
+      <p>{tutorial.exercise}</p>
+      <div style="margin-top:28px"><a class="card-link" href={`${base}categories/${tutorial.category}/`}>← Back to {category?.title}</a></div>
+    </article>
+    <aside class="sidebar">
+      <div class="content-card">
+        <h3>In this tutorial</h3>
+        <a href="#top">Introduction</a>
+        {tutorial.sections.map((section, index) => <a href={`#section-${index}`}>{section.heading}</a>)}
+        <a href="#takeaway">Key takeaway</a>
+      </div>
+      <div class="content-card">
+        <h3>Keep learning</h3>
+        <a href={`${base}tutorials/`}>All tutorials →</a>
+        <a href={`${base}labs/`}>Interactive labs →</a>
+      </div>
+    </aside>
+  </div></section>
+  <script>
+    // The article content is static and accessible without JavaScript.
+  </script>
+</BaseLayout>

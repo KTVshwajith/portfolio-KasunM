@@ -1,0 +1,13 @@
+---
+const { category } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<a class="category-card" href={`${base}categories/${category.slug}/`}>
+  <div class="card-top">
+    <span class="card-icon">{category.icon}</span>
+    <span class="card-number">{category.number}</span>
+  </div>
+  <h3>{category.title}</h3>
+  <p>{category.short}</p>
+  <span class="card-link">Explore topic →</span>
+</a>

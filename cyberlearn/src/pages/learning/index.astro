@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import CategoryCard from "../../components/CategoryCard.astro";
+import { categories } from "../../data/categories.js";
+---
+<BaseLayout title="Learning Hub">
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumb">HOME / LEARNING HUB</div>
+    <h1>Explore the learning hub</h1>
+    <p>Choose a subject area and build your knowledge through structured tutorials, practical examples and guided projects.</p>
+  </div></section>
+  <section class="section"><div class="container">
+    <div class="category-grid">{categories.map((category) => <CategoryCard category={category} />)}</div>
+  </div></section>
+</BaseLayout>

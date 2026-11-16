@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Interactive Laboratories">
+  <section class="page-hero"><div class="container">
+    <div class="breadcrumb">LEARNING HUB / PRACTICAL LABS</div>
+    <h1>Interactive laboratories</h1>
+    <p>Experiment with security and computing concepts through browser-based demonstrations. These starter labs run locally in your browser and do not send your input to a server.</p>
+  </div></section>
+  <section class="section"><div class="container">
+    <div class="tutorial-grid">
+      <a class="tutorial-card" href={`${base}labs/sha-256/`}>
+        <div class="tutorial-meta"><span class="pill">Cryptography</span><span class="card-number">LIVE DEMO</span></div>
+        <h3>SHA-256 Hashing Lab</h3>
+        <p>Enter text, calculate its SHA-256 digest and observe how a small input change affects the output.</p>
+        <span class="card-link">Open laboratory →</span>
+      </a>
+      <div class="tutorial-card">
+        <div class="tutorial-meta"><span class="pill">Coming next</span></div>
+        <h3>Merkle Tree Explorer</h3>
+        <p>Visualise leaf hashes, parent hashes and a Merkle root from a small sample dataset.</p>
+      </div>
+      <div class="tutorial-card">
+        <div class="tutorial-meta"><span class="pill">Coming next</span></div>
+        <h3>RSA Key Explorer</h3>
+        <p>Explore public-key and private-key concepts using safe, small educational examples.</p>
+      </div>
+    </div>
+  </div></section>
+</BaseLayout>

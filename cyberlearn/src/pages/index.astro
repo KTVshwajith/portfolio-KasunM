@@ -1,0 +1,70 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CategoryCard from "../components/CategoryCard.astro";
+import TutorialCard from "../components/TutorialCard.astro";
+import { categories } from "../data/categories.js";
+import { tutorials } from "../data/tutorials.js";
+const featured = tutorials.slice(0, 6);
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="Explore Cybersecurity, AI & Blockchain">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">An independent technology learning platform</div>
+        <h1>Explore. Understand.<br />Experiment. Secure.</h1>
+        <p>Learn cybersecurity, artificial intelligence, cryptography, blockchain and digital forensics through clear explanations, practical examples and interactive experiments.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href={`${base}learning/`}>Explore learning hub</a>
+          <a class="btn ghost" href={`${base}labs/`}>Try interactive labs</a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="panel-label">Learn by exploring</div>
+        <strong>From foundations to practical research.</strong>
+        <p>Build your understanding step by step, connect theory with implementation, and explore the technologies shaping digital trust.</p>
+        <div style="height:20px"></div>
+        <div class="panel-stat"><span>Learning areas</span><b>10</b></div>
+        <div class="panel-stat"><span>Starter tutorials</span><b>{tutorials.length}</b></div>
+        <div class="panel-stat"><span>Interactive labs</span><b>1 live demo</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="kicker">Explore the knowledge hub</div><h2>Learning areas</h2></div>
+        <p>Follow a topic that interests you, from cybersecurity fundamentals to advanced AI security and digital forensics.</p>
+      </div>
+      <div class="category-grid">
+        {categories.map((category) => <CategoryCard category={category} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:#fff">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="kicker">Start learning</div><h2>Featured tutorials</h2></div>
+        <a class="card-link" href={`${base}tutorials/`}>View all tutorials →</a>
+      </div>
+      <div class="tutorial-grid">
+        {featured.map((tutorial) => <TutorialCard tutorial={tutorial} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="feature-band">
+        <div>
+          <div class="kicker">Experiment, don't just read</div>
+          <h3>Try the SHA-256 interactive laboratory</h3>
+          <p>Enter your own text and calculate its SHA-256 digest directly in your browser.</p>
+        </div>
+        <a class="btn primary" href={`${base}labs/sha-256/`}>Open laboratory →</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

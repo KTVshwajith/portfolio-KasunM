@@ -318,7 +318,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <p class="eyebrow">Dr · PhD, AUT · Auckland, New Zealand</p>
       <h1>Kasun Moolikagedara</h1>
       <p class="role">Cybersecurity &amp; AI lecturer and researcher, bridging research and industry practice.</p>
-      <p class="lede">I teach and research at the intersection of AI, cybersecurity and blockchain, and I bring live security-operations experience into the classroom: I currently support 500+ secure payment terminals in a PCI DSS-regulated environment. The demos below run my research code in your browser.</p>
+      <p class="lede">I teach and research at the intersection of AI, cybersecurity and blockchain, and I bring current industry practice into the classroom. The demos below run my research code in your browser.</p>
       <div class="btn-row">
         <a class="btn primary" href="#research">Try the live demos</a>
         <a class="btn" href="https://www.linkedin.com/in/kasun-mg" target="_blank" rel="noopener">LinkedIn ↗</a>
@@ -329,12 +329,10 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <span><b>7</b> peer-reviewed publications</span>
         <span><b>PhD</b> Computer Science, AUT</span>
         <span><b>MSc</b> Network &amp; Information Security, Kingston</span>
-        <span><b>500+</b> secure terminals supported</span>
       </div>
     </div>
     <figure class="portrait">
       <img src="kasun.jpg" alt="Portrait of Kasun Moolikagedara" width="413" height="531">
-      <figcaption>kasun.jpg · sha256 <strong id="photo-hash">computing…</strong><br>Fingerprint computed in your browser, the same way my research verifies video frames.</figcaption>
     </figure>
   </div>
 </section>
@@ -578,7 +576,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <div class="body-grid">
       <div></div>
       <div class="content timeline">
-        <div class="job"><span class="when">Feb 2025 – now</span><div><h3>IT Support Team Member</h3><p class="org">Verifone · Auckland</p><ul><li>Support 500+ secure payment terminals in a PCI DSS-regulated environment</li><li>Provide L1/L2 technical support and manage incidents through ServiceNow</li></ul></div></div>
+        <div class="job"><span class="when">Feb 2025 – now</span><div><h3>IT Support Team Member</h3><p class="org">Verifone · Auckland</p><ul><li>Provide L1/L2 technical support in a PCI DSS-regulated environment and manage incidents through ServiceNow</li></ul></div></div>
         <div class="job"><span class="when">Aug 2020 – Dec 2024</span><div><h3>PhD Research, AI Security, Blockchain &amp; Computer Vision</h3><p class="org">Auckland University of Technology</p><ul><li>Developed video blockchain frameworks to protect the integrity and privacy of surveillance footage in smart-city environments</li><li>Designed AI-driven authentication models to detect manipulated or AI-generated video, applicable to deepfake detection and digital forensics</li><li>Applied YOLO and CNN models for object recognition and anomaly detection in security footage</li><li>Built Python and OpenCV pipelines for large-scale video processing, validation and analysis</li><li>Presented to academic panels, industry partners and international conference audiences</li></ul></div></div>
         <div class="job"><span class="when">Aug 2022 – Feb 2023</span><div><h3>Research Assistant, Computer Vision &amp; AI Health &amp; Safety Systems</h3><p class="org">Auckland University of Technology</p><ul><li>Used computer vision and machine learning to monitor workplace health and safety in warehouse environments</li><li>Assessed human pose to detect musculoskeletal injury risk in real time</li><li>Developed and debugged systems in Python, JavaScript and OpenCV; authored technical reports for stakeholders</li></ul></div></div>
         <div class="job"><span class="when">Jan 2023 – Sep 2023</span><div><h3>Lecturer</h3><p class="org">Saegis Campus</p><ul><li>Taught information technology at degree level</li></ul></div></div>
@@ -713,17 +711,6 @@ async function sha256(data) {
   const bytes = typeof data === "string" ? new TextEncoder().encode(data) : data;
   return hex(await crypto.subtle.digest("SHA-256", bytes));
 }
-
-/* ---------- Photo fingerprint ---------- */
-(async function () {
-  const out = document.getElementById("photo-hash");
-  try {
-    const img = document.querySelector(".portrait img");
-    const res = await fetch(img.currentSrc || img.src);
-    const h = await sha256(await res.arrayBuffer());
-    out.textContent = h.slice(0, 16) + "…" + h.slice(-8);
-  } catch (e) { out.textContent = "unavailable here"; }
-})();
 
 /* ---------- Video chain demo (V_Chain: block matrix, Merkle root, proof of work) ---------- */
 (function () {
